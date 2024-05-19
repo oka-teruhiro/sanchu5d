@@ -4,7 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
 //import 'package:sanchu4b/douga/douga_kaisetu2.dart';
 import 'package:sanchu5d/douga/douga_kaisetu3.dart';
-import 'package:sanchu5d/douga/douga_kaisetu4.dart';
+//import 'package:sanchu5d/douga/douga_kaisetu4.dart';
 import 'package:sanchu5d/output/kyou_unsei_page.dart';
 import 'package:sanchu5d/output/output4.dart';
 import 'package:sanchu5d/quiz/quiz_page_001.dart';
@@ -277,7 +277,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>  const DougaKaisetu4(),
+                        builder: (context) =>   const DougaKaisetu3(),
                       ),
                     );
                   },

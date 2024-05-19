@@ -21,7 +21,7 @@ class _DougaKaisetu3State extends State<DougaKaisetu3> {
     _controller = YoutubePlayerController.fromVideoId(
       videoId: 'StwDgaLTwwQ',
       params: const YoutubePlayerParams(
-        //playsInline: true,
+        playsInline: true,
         mute: false,
         showControls: true,
         showFullscreenButton: true,
