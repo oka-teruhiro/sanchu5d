@@ -21,6 +21,7 @@ dependencies:
   youtube_player_iframe: ^5.1.2
   provider: ^6.1.2
   shared_preferences: ^2.2.3
+  webview_flutter: ^4.7.0
 
 dev_dependencies:
   flutter_test:
