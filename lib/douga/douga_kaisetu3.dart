@@ -1,7 +1,4 @@
-//import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-//import 'package:flutter/widgets.dart';
-//import 'package:sanchu4b/src/connectivity_sample.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 class DougaKaisetu3 extends StatefulWidget {
@@ -28,10 +25,14 @@ class _DougaKaisetu3State extends State<DougaKaisetu3> {
       ),
     );
 
+    // 動画の再生状態を監視するリスナーを追加
+    _controller.listen((event) {
+      if (event.playerState == PlayerState.ended){
+        // 動画が終了したら元のページに遷移します
+        Navigator.pop(context);
+      }
+    });
     _controller.pauseVideo();
-
-
-
   }
 
   @override
@@ -61,12 +62,6 @@ class _DougaKaisetu3State extends State<DougaKaisetu3> {
           child: YoutubePlayer(
             controller: _controller,
             aspectRatio: 5 / 8,
-
-
-            //onEnded: (metaData) {
-            // 動画再生が終了したら前のページに戻る
-            // Navigator.pop(context);
-
           ),
         ),
       ),
@@ -93,7 +88,7 @@ class _DougaKaisetu3State extends State<DougaKaisetu3> {
               ),
               IconButton(
                 onPressed: () {
-                  // 動画を最初から再生
+                  // 動画を終了
                   _controller.stopVideo();
                   Navigator.pop(context);
                 },
@@ -105,5 +100,4 @@ class _DougaKaisetu3State extends State<DougaKaisetu3> {
       ],
     );
   }
-
 }
