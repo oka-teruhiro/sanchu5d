@@ -1,7 +1,7 @@
 name: sanchu5d
 description: "天運三柱推命ver5 動画で解説文を追加する"
 publish_to: 'none' # pub.dev に公開したい場合はこの行を削除してください。
-version: 1.0.0+1
+version: 5.1.6+23
 
 environment:
   sdk: '>=3.3.4 <4.0.0'
@@ -9,19 +9,187 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
-
+  flutter_localizations:
+    sdk: flutter
+    # 日本語化するために0.18.1 を　0.18.0 にする必要あり(2023.6.11)
+  intl: ^0.18.1
   cupertino_icons: ^1.0.8
+  ##connectivity_plus: ^5.0.2
+  # ■■■■■■■■■動画を再生するために必要なパッケージ■■■■■■■■■
+  #video_player: ^2.8.5
+  #youtube_player_flutter: ^9.0.1
+  youtube_player_iframe: ^5.1.2
+  provider: ^6.1.2
+  shared_preferences: ^2.2.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
   flutter_lints: ^4.0.0
 
 flutter:
-
   uses-material-design: true
+  assets:
+    - assets/
+    - images/main/gogyou1.png
+    - images/main/gogyou2.jpg
+    - images/main/gogyou3.jpg
+    - images/main/taxi.png
+    - images/main/取説4a.jpg
+    - images/main/取説4b.jpg
+    - images/main/取説4c.jpg
+    - images/main/取説4d.jpg
+    - images/main/取説4e.jpg
+    - images/main/取説4f.jpg
+    - images/main/取説4g.jpg
+    - images/main/取説5a.jpg
+    - images/main/取説5b.jpg
+    - images/main/取説5c.jpg
+    - images/nikkan/甲_大樹.jpg
+    - images/nikkan/甲_木陰.jpg
+    - images/nikkan/丁_キャンドル.jpg
+    - images/nikkan/丁_燃える炎.jpg
+    - images/nikkan/丙_太陽.jpg
+    - images/nikkan/丙_朝日.jpg
+    - images/nikkan/乙_からみつく.jpg
+    - images/nikkan/乙_イラスト１.jpg
+    - images/nikkan/壬_支流.jpg
+    - images/nikkan/壬_海.jpg
+    - images/nikkan/己_畑土.jpg
+    - images/nikkan/己_陶芸.jpg
+    - images/nikkan/庚_剣.jpg
+    - images/nikkan/庚_鍛える.jpg
+    - images/nikkan/戊_岩山.jpg
+    - images/nikkan/戊_石垣.jpg
+    - images/nikkan/癸_潤う.jpg
+    - images/nikkan/癸_雲雨.jpg
+    - images/nikkan/辛_宝石.jpg
+    - images/nikkan/辛_王冠.jpg
+    - images/tentitokugou/anehaturu.jpg
+    - images/tentitokugou/anehaturu1.jpg
+    - images/tentitokugou/anehaturu2.jpg
+    - images/tuuhenbosi/t0.png
+    - images/tuuhenbosi/t1.png
+    - images/tuuhenbosi/t2.png
+    - images/tuuhenbosi/t3.png
+    - images/tuuhenbosi/t4.png
+    - images/tuuhenbosi/t5.png
+    - images/tuuhenbosi/t6.png
+    - images/tuuhenbosi/t7.png
+    - images/tuuhenbosi/t8.png
+    - images/tuuhenbosi/t9.png
+    - images/tuuhenbosi/通変星概要1.jpg
+    - images/tuuhenbosi/通変星概要2.jpg
+    - images/tuuhenbosi/通変星概要3.jpg
+    - images/tuuhenbosi/通変星概要4.jpg
+    - images/tuuhenbosi/通変星概要5.jpg
+    - images/tuuhenbosi/通変星概要6.jpg
+    - images/tuuhenbosi/通変星概要7.jpg
+    - images/tuuhenbosi/通変星蔵干1.jpg
+    - images/tuuhenbosi/通変星蔵干2.jpg
+    - images/tuuhenbosi/通変星蔵干3.jpg
+    - images/tuuhenbosi/通変星蔵干4.jpg
+    - images/tuuhenbosi/通変星蔵干5.jpg
+    - images/tuuhenbosi/通変星蔵干6.jpg
+    - images/tuuhenbosi/通変星蔵干7.jpg
+    - images/tuuhenbosi/通変星蔵干8.jpg
+    - images/tuuhenbosi/通変星算出2.jpg
+    - images/tuuhenbosi/通変星算出3.jpg
+    - images/tuuhenbosi/通変星算出4.jpg
+    - images/tuuhenbosi/通変星算出5.jpg
+    - images/tuuhenbosi/通変星1.jpg
+    - images/tuuhenbosi/通変星2.jpg
+    - images/tuuhenbosi/通変星3a.jpg
+    - images/tuuhenbosi/通変星3b.jpg
+    - images/tuuhenbosi/通変星4.jpg
+    - images/tuuhenbosi/通変星5.jpg
+    - images/tuuhenbosi/通変星6.jpg
+    - images/tuuhenbosi/通変星7.jpg
+    - images/tuuhenbosi/通変星8.jpg
+    - images/tuuhenbosi/通変星9.jpg
+    - images/tuuhenbosi/通変星10.jpg
+    - images/tuuhenbosi/通変星11.jpg
+    - images/tuuhenbosi/通変星12.jpg
+    - images/tuuhenbosi/通変星13.jpg
+    - images/tuuhenbosi/通変星14.jpg
+    - images/tuuhenbosi/通変星15.jpg
+    - images/tuuhenbosi/通変星16.jpg
+    - images/tuuhenbosi/通変星17.jpg
+    - images/tuuhenbosi/通変星18.jpg
+    - images/tuuhenbosi/通変星19.jpg
+    - images/tuuhenbosi/通変星20.jpg
+    - images/quiz/Q001/A0010.png
+    - images/quiz/Q001/A0011.png
+    - images/quiz/Q001/A0012.png
+    - images/quiz/Q001/Q001.png
+    - images/quiz/Q002/Q002.png
+    - images/quiz/Q002/A0020.png
+    - images/quiz/Q003/Q003.png
+    - images/quiz/Q003/A0030.png
+    - images/quiz/Q003/A0031.png
+    - images/quiz/Q004/Q004.png
+    - images/quiz/Q004/A0040.png
+    - images/quiz/Q004/A0041.png
+    - images/quiz/Q005/Q005.png
+    - images/quiz/Q005/A0050.png
+    - images/quiz/Q005/A0051.png
+    - images/quiz/Q005/A0052.png
+    - images/quiz/Q006/Q006.png
+    - images/quiz/Q006/A0060.png
+    - images/quiz/Q006/A0061.png
+    - images/quiz/Q006/A0062.png
+    - images/quiz/Q007/Q007.png
+    - images/quiz/Q007/A0070.png
+    - images/quiz/Q007/A0071.png
+    - images/quiz/Q007/A0072.png
+    - images/juuniun/上流下流.jpg
+    - images/juuniun/エレベータ階段.jpg
+    - images/juuniun/大きい石小さい石.jpg
+    - images/juuniun/自分の荷をあげる.jpg
+    - images/juuniun/十二運の強弱.jpg
+    - images/juuniun/十二運の読み.jpg
+    - images/juuniun/十二運と一生1.jpg
+    - images/juuniun/十二運と一生2.jpg
+    - images/juuniun/十二運の出し方.jpg
+    - images/juuniun/四旺.jpg
+    - images/juuniun/四衰.jpg
+    - images/juuniun/四旺と四衰.jpg
+    - images/juuniun/宇多田ヒカル.jpg
+    - images/juuniun/宇多田ヒカル命式.jpg
+    - images/juuniun/宇多田ヒカル十二運.jpg
+    - images/juuniun/四旺四衰特徴.jpg
+    - images/juuniun/12運_各論.jpg
+    - images/juuniun/12運_月柱の影響.jpg
+    - images/juuniun/12運_胎.jpg
+    - images/juuniun/12運_養.jpg
+    - images/juuniun/12運_長.jpg
+    - images/juuniun/12運_沐.jpg
+    - images/juuniun/12運_冠.jpg
+    - images/juuniun/12運_建.jpg
+    - images/juuniun/12運_帝.jpg
+    - images/juuniun/12運_衰.jpg
+    - images/juuniun/12運_病.jpg
+    - images/juuniun/12運_死.jpg
+    - images/juuniun/12運_墓.jpg
+    - images/juuniun/12運_絶.jpg
+    - images/juuniun/12運_四旺四衰バランス.jpg
+    - images/0.jpg
+    - images/1.jpg
+    - images/juuniun/12胎.jpg
+    - images/juuniun/12養.jpg
+    - images/juuniun/12長.jpg
+    - images/juuniun/12沐.jpg
+    - images/juuniun/12冠.jpg
+    - images/juuniun/12建.jpg
+    - images/juuniun/12帝.jpg
+    - images/juuniun/12衰.jpg
+    - images/juuniun/12病.jpg
+    - images/juuniun/12死.jpg
+    - images/juuniun/12墓.jpg
+    - images/juuniun/12絶.jpg
+    - images/juuniun/12運と地上生活.jpg
+
+
 
   # assets:
   #   - images/a_dot_burr.jpeg
