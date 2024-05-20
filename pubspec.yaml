@@ -1,7 +1,7 @@
 name: sanchu5d
 description: "天運三柱推命ver5 動画で解説文を追加する"
 publish_to: 'none' # pub.dev に公開したい場合はこの行を削除してください。
-version: 5.1.6+23
+version: 5.1.7+23
 
 environment:
   sdk: '>=3.3.4 <4.0.0'
