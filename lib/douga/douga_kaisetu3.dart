@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 class DougaKaisetu3 extends StatefulWidget {
   const DougaKaisetu3({super.key});
@@ -10,10 +11,14 @@ class DougaKaisetu3 extends StatefulWidget {
 
 class _DougaKaisetu3State extends State<DougaKaisetu3> {
   late YoutubePlayerController _controller;
+  bool _isLoading = true;
+  bool _isConnected = true;
 
   @override
   void initState() {
     super.initState();
+    // ネットワーク接続状態を確認します
+    _checkConnectivity();
     // YoutubePlayerController を初期化します
     _controller = YoutubePlayerController.fromVideoId(
       videoId: 'StwDgaLTwwQ',
@@ -30,9 +35,22 @@ class _DougaKaisetu3State extends State<DougaKaisetu3> {
       if (event.playerState == PlayerState.ended){
         // 動画が終了したら元のページに遷移します
         Navigator.pop(context);
+      } else if (event.playerState == PlayerState.playing) {
+        setState(() {
+          _isLoading = false;
+        });
       }
     });
     _controller.pauseVideo();
+  }
+
+  void _checkConnectivity() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none){
+      setState(() {
+        _isConnected = false;
+      });
+    }
   }
 
   @override
@@ -54,7 +72,15 @@ class _DougaKaisetu3State extends State<DougaKaisetu3> {
           ),
         ),
       ),
-      body: Container(
+      body: _isConnected
+      ? _isLoading
+      ? const Center(
+        child: Text(
+          '動画をロードしています',
+        style: TextStyle(color: Colors.cyan),
+        ),
+      )
+      : Container(
         color: Colors.black,
         child: SizedBox(
           height: double.infinity,
@@ -64,8 +90,15 @@ class _DougaKaisetu3State extends State<DougaKaisetu3> {
             aspectRatio: 5 / 8,
           ),
         ),
+      )
+      : const Center(
+        child: Text(
+            'ネットに接続されていません、ネットに接続してから再起動して下さい。',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
-      persistentFooterButtons: <Widget>[
+      persistentFooterButtons: _isConnected && !_isLoading
+          ? <Widget>[
         SizedBox(
           height: 40,
           child: Row(
@@ -97,7 +130,8 @@ class _DougaKaisetu3State extends State<DougaKaisetu3> {
             ],
           ),
         ),
-      ],
+      ]
+      : null,
     );
   }
 }
