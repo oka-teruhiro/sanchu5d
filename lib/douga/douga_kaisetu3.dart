@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sanchu5d/douga/connectivity_on.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 class DougaKaisetu3 extends StatefulWidget {
@@ -54,14 +55,16 @@ class _DougaKaisetu3State extends State<DougaKaisetu3> {
           ),
         ),
       ),
-      body: Container(
-        color: Colors.black,
-        child: SizedBox(
-          height: double.infinity,
-          width: double.infinity,
-          child: YoutubePlayer(
-            controller: _controller,
-            aspectRatio: 5 / 8,
+      body: ConnectivityOn(
+        child: Container(
+          color: Colors.black,
+          child: SizedBox(
+            height: double.infinity,
+            width: double.infinity,
+            child: YoutubePlayer(
+              controller: _controller,
+              aspectRatio: 5 / 8,
+            ),
           ),
         ),
       ),
