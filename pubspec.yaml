@@ -1,7 +1,7 @@
 name: sanchu5d
 description: "天運三柱推命ver5 動画で解説文を追加する"
 publish_to: 'none' # pub.dev に公開したい場合はこの行を削除してください。
-version: 5.1.7+23
+version: 5.1.8+23
 
 environment:
   sdk: '>=3.3.4 <4.0.0'
@@ -27,16 +27,28 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
-  #アプリアイコン作成用
-  flutter_launcher_icons: ^0.11.0
-flutter_icons:
-  android: true
-  ios: true
-  remove_alpha_ios: true
-  image_path: "images/icon/icon_uranai_x512.png"
-  min_sdk_android: 21
-  adaptive_icon_background: '#FFFFFF'
-  adaptive_icon_foreground: "images/icon/icon_uranai_x512.png"
+#  #スプラッシュ画面作成用
+#  flutter_native_splash: ^2.2.7
+#flutter_native_splash:
+#  image: "images/icon/icon_uranai_x1024.png"
+#  color: "#000000"
+#  color_dark: "#000000"
+#  android_12:
+#    icon_background_color: '#000000'
+#    #image: 'assets/images/splash_android12.png'
+#    icon_background_color_dark: '#000000'
+#    #image_dark: 'assets/images/splash_android12.png'
+
+#  #アプリアイコン作成用
+#  flutter_launcher_icons: ^0.11.0
+#flutter_icons:
+#  android: true
+#  ios: true
+#  remove_alpha_ios: true
+#  image_path: "images/icon/icon_uranai_x512.png"
+#  min_sdk_android: 21
+#  adaptive_icon_background: '#FFFFFF'
+#  adaptive_icon_foreground: "images/icon/icon_uranai_x512.png"
 
 flutter:
   uses-material-design: true
