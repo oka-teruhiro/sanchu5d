@@ -42,7 +42,7 @@ class Update extends StatelessWidget {
                   padding: const EdgeInsets.all(8.0),
                   child: ListTile(
                     title: const Text('第5.1版　動画をwebへ移動し、アプリ容量が減少しました。'
-                        '（2024.4.28更新）'),
+                        '（2024.5.23更新）'),
                     trailing: const Icon(Icons.navigate_next),
                     onTap: () {
                       Navigator.push(

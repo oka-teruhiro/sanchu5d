@@ -1,7 +1,7 @@
 name: sanchu5d
 description: "天運三柱推命ver5 動画で解説文を追加する"
 publish_to: 'none' # pub.dev に公開したい場合はこの行を削除してください。
-version: 5.1.8+23
+version: 5.1.9+23
 
 environment:
   sdk: '>=3.3.4 <4.0.0'
@@ -67,7 +67,7 @@ flutter:
     - images/main/取説4g.jpg
     - images/main/取説5a.jpg
     - images/main/取説5b.jpg
-    - images/main/取説5c.jpg
+    - images/main/取説5d.jpg
     - images/nikkan/甲_大樹.jpg
     - images/nikkan/甲_木陰.jpg
     - images/nikkan/丁_キャンドル.jpg

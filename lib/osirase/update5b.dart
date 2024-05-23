@@ -8,7 +8,7 @@ class Update5b extends StatelessWidget {
     List<String> zu = [
       'images/0.jpg',
       'images/main/取説5a.jpg',
-      'images/main/取説5c.jpg',
+      'images/main/取説5d.jpg',
       'images/0.jpg',
       'images/0.jpg',
       'images/0.jpg',
@@ -44,7 +44,7 @@ class Update5b extends StatelessWidget {
       backgroundColor: Colors.black,
       appBar: AppBar(
         title: const Text(
-          '第5.1版（ver5.1.6)',
+          '第5.1版（ver5.1.9)',
           style: TextStyle(
             color: Colors.pinkAccent,
             fontWeight: FontWeight.bold,
