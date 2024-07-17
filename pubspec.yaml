@@ -1,7 +1,7 @@
 name: sanchu5d
 description: "天運三柱推命ver5 動画で解説文を追加する"
 publish_to: 'none' # pub.dev に公開したい場合はこの行を削除してください。
-version: 5.1.9+23
+version: 5.1.11+24
 
 environment:
   sdk: '>=3.3.4 <4.0.0'
@@ -14,14 +14,14 @@ dependencies:
     # 日本語化するために0.18.1 を　0.18.0 にする必要あり(2023.6.11)
   intl: ^0.19.0
   cupertino_icons: ^1.0.8
-  connectivity_plus: ^5.0.2
+  #connectivity_plus: ^5.0.2
   # ■■■■■■■■■動画を再生するために必要なパッケージ■■■■■■■■■
   #video_player: ^2.8.5
   #youtube_player_flutter: ^9.0.1
-  youtube_player_iframe: ^5.1.3
+  #youtube_player_iframe: ^5.1.3
   provider: ^6.1.2
   shared_preferences: ^2.2.3
-  webview_flutter: ^4.8.0
+  #webview_flutter: ^4.8.0
 
 dev_dependencies:
   flutter_test:
@@ -68,6 +68,8 @@ flutter:
     - images/main/取説5a.jpg
     - images/main/取説5b.jpg
     - images/main/取説5d.jpg
+    - images/main/占い師天運.jpg
+    - images/main/QR_v6_manual.png
     - images/nikkan/甲_大樹.jpg
     - images/nikkan/甲_木陰.jpg
     - images/nikkan/丁_キャンドル.jpg
