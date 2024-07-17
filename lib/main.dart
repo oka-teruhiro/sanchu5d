@@ -221,7 +221,7 @@ class _MyHomePageState extends State<MyHomePage> {
       child: Scaffold(
         backgroundColor: Colors.black,
         appBar: AppBar(
-          title: const Text('天運三柱推命 ver.5.1.9',
+          title: const Text('天運三柱推命 ver.5.1.10',
               style: TextStyle(
                 color: Colors.pinkAccent,
                 fontWeight: FontWeight.bold,
@@ -261,7 +261,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: TextButton(
                   style: ButtonStyle(
                     foregroundColor:
-                    MaterialStateProperty.all<Color>(Colors.black),
+                    WidgetStateProperty.all<Color>(Colors.black),
                   ),
                   child: const Text(
                     'このアプリの使い方を見る',
@@ -462,7 +462,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: TextButton(
                   style: ButtonStyle(
                     foregroundColor:
-                    MaterialStateProperty.all<Color>(Colors.black),
+                    WidgetStateProperty.all<Color>(Colors.black),
                   ),
                   child: const Text(
                     '易占クイズに挑戦する',
