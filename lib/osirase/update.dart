@@ -12,7 +12,7 @@ import 'package:sanchu5d/osirase/update4c.dart';
 import 'package:sanchu5d/osirase/update4d.dart';
 import 'package:sanchu5d/osirase/update4e.dart';
 import 'package:sanchu5d/osirase/update5a.dart';
-import 'package:sanchu5d/osirase/update5b.dart';
+//import 'package:sanchu5d/osirase/update5b.dart';
 
 class Update extends StatelessWidget {
   const Update({super.key});
