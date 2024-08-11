@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:sanchu5d/main.dart';
-import 'package:sanchu5d/quiz/quiz_page_003.dart';
-
+import '../input_page.dart';
+import '../quiz/quiz_page_003.dart';
 import 'answer_page_002.dart';
 
 // ignore: must_be_immutable
 class QuizPage002 extends StatelessWidget {
-  QuizPage002({super.key});
+  final String apptitle; // 6.1.37
+
+  QuizPage002({
+    super.key,
+    required this.apptitle, // 6.1.37
+  });
 
   bool quizLast = false;
   int seikai = 3;
@@ -23,10 +27,7 @@ class QuizPage002 extends StatelessWidget {
             color: Colors.black,
             child: Column(children: [
               ListTile(
-                title: Image.asset('images/quiz/Q002/Q002.png'),
-                //title: Image.network(
-                //'https://okatoku331.net/wp-content/uploads/2023/01/Q001-1024x1018.png',
-                //),
+                title: Image.asset('assets/images/quiz/Q002/Q002.png'), // 6.1.37
               ),
               SizedBox(
                 height: 60,
@@ -35,6 +36,12 @@ class QuizPage002 extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4.0),
+                          ),
+                        ),
                         onPressed: () {
                           if (seikai == 1) {
                             kotae = 'o';
@@ -43,8 +50,17 @@ class QuizPage002 extends StatelessWidget {
                           }
                           _showKotae(context);
                         },
-                        child: const Text('1')),
+                        child: const Text('1',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),)),
                     ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4.0),
+                          ),
+                        ),
                         onPressed: () {
                           if (seikai == 2) {
                             kotae = 'o';
@@ -53,8 +69,17 @@ class QuizPage002 extends StatelessWidget {
                           }
                           _showKotae(context);
                         },
-                        child: const Text('2')),
+                        child: const Text('2',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),)),
                     ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4.0),
+                          ),
+                        ),
                         onPressed: () {
                           if (seikai == 3) {
                             kotae = 'o';
@@ -63,7 +88,10 @@ class QuizPage002 extends StatelessWidget {
                           }
                           _showKotae(context);
                         },
-                        child: const Text('3')),
+                        child: const Text('3',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),)),
                   ],
                 ),
               ),
@@ -77,30 +105,46 @@ class QuizPage002 extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             ElevatedButton(
-                              child: const Text('<< ホームページ'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4.0),
+                                ),
+                              ),
+                              child: const Text('<< ホームページ',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),),
                               onPressed: () {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => const MyHomePage(
-                                        title: '',
+                                      builder: (context) => InputPage(
+                                        apptitle: apptitle,
                                       ),
                                     ));
                               },
                             ),
                             ElevatedButton(
-                              child: const Text('次の問題 >'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4.0),
+                                ),
+                              ),
+                              child: const Text('次の問題 >',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),),
                               onPressed: () {
                                 if (quizLast == true) {
-                                  //_showQuizLast(context);
                                 } else {
                                   //quizNoMoji = (quizNo + 2).toString();
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => QuizPage003(
-                                          //quizNoMoji: quizNoMoji,
-                                          //bestQuizNoMoji: bestQuizNoMoji,
+                                        apptitle: apptitle,
                                           ),
                                     ),
                                   );
@@ -146,9 +190,7 @@ class QuizPage002 extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const AnswerPage002(
-                                    //quizNoMoji: quizNoMoji,
-                                    //bestQuizNoMoji: bestQuizNoMoji,
+                                builder: (context) => AnswerPage002(apptitle: apptitle,
                                     ),
                               ),
                             );
@@ -170,9 +212,8 @@ class QuizPage002 extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const AnswerPage002(
-                                    //quizNoMoji: quizNoMoji,
-                                    //bestQuizNoMoji: bestQuizNoMoji,
+                                builder: (context) => AnswerPage002(
+                                  apptitle: apptitle,
                                     ),
                               ),
                             );

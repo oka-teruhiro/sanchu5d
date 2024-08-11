@@ -234,7 +234,14 @@ class _Update2State extends State<Update2> {
             title: Text(''),
           ),
           ElevatedButton(
-            child: const Text('戻る'),
+            child: const Text(
+              '戻る',
+              style: TextStyle(
+                color: Colors.greenAccent,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
             onPressed: () {
               Navigator.pop(context);
             },

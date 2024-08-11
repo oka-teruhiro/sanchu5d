@@ -104,7 +104,14 @@ class Update1 extends StatelessWidget {
             title: Text(''),
           ),
           ElevatedButton(
-            child: const Text('戻る'),
+            child: const Text(
+              '戻る',
+              style: TextStyle(
+                color: Colors.greenAccent,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
             onPressed: () {
               Navigator.pop(context);
             },

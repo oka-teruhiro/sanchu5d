@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/material.dart';
 
 import 'kansuu.dart';
@@ -76,12 +78,20 @@ class KyouUnseiModel extends ChangeNotifier {
   String nowMoji = '2023.8.14';
   String nowMojiApp = '2023.8.14 の運勢';
   int nowNitiKan = 0;
+  String nowNitiKanMoji = '甲';    // 6.1.3 鑑定日の日干
+  String nowNitiKanYomi = 'きのえ'; // 6.1.3 鑑定日の日干のよみ
+  String nowNitiSiMoji = '甲';    // 6.1.3 鑑定日の日支
+  String nowNitiSiYomi = 'きのえ'; // 6.1.3 鑑定日の日支のよみ
   int nowNitiSi = 0;
   DateTime now = DateTime.now(); // 今日の日付
   DateTime now1 = DateTime(2023, 8, 14); // 鑑定年月日
   int now1Youbi = 1; // 鑑定日の曜日
   String now1YoubiMoji = '（月）';
   String nowTuhen = '比肩'; // 鑑定日の通変星
+  String nitiKan = '甲';         // 6.1.3 日干
+  String nitikanYomi = 'きのえ';  // 6.1.3 日干のよみがな
+  String nitiSiMoji = '子';          // 6.1.3 日支
+  String nitiSiYomi = 'ね';   // 6.1.3 日支のよみがな
   int nitiKanNo = 0; // 生年月日の日干No.(0〜9)
   int nitiSi = 0; // 生年月日の日支No.(0〜11)
   int gogyou = 0; // 生年月日の日干の属する五行No.(0〜4)
@@ -171,7 +181,9 @@ class KyouUnseiModel extends ChangeNotifier {
     '',
     '',
     '',
-    ''
+    '',
+    '',
+    '',
   ];
   List<double> takasaMoji = [
     0.0,
@@ -233,7 +245,9 @@ class KyouUnseiModel extends ChangeNotifier {
     0.0,
     0.0,
     0.0,
-    0.0
+    0.0,
+    0.0,
+    0,0,
   ];
   int iroPink1 = 0xffffa0ff; //ピンク
   int iroGreen = 0xFFa0FFa0; //緑
@@ -297,7 +311,9 @@ class KyouUnseiModel extends ChangeNotifier {
     -1,
     -1,
     -1,
-    -1
+    -1,
+    -1,
+    -1,
   ];
   String kitiKyou = '平';
   int kitiPoint = 0;
@@ -325,16 +341,16 @@ class KyouUnseiModel extends ChangeNotifier {
     go8 = ((gogyou * -2 + 8) % 10).toString();
     go9 = ((gogyou * -2 + 9) % 10).toString();
     go = [
-      'images/tuuhenbosi/t$go0.png',
-      'images/tuuhenbosi/t$go1.png',
-      'images/tuuhenbosi/t$go2.png',
-      'images/tuuhenbosi/t$go3.png',
-      'images/tuuhenbosi/t$go4.png',
-      'images/tuuhenbosi/t$go5.png',
-      'images/tuuhenbosi/t$go6.png',
-      'images/tuuhenbosi/t$go7.png',
-      'images/tuuhenbosi/t$go8.png',
-      'images/tuuhenbosi/t$go9.png',
+      'assets/images/tuuhenbosi/t$go0.png',
+      'assets/images/tuuhenbosi/t$go1.png',
+      'assets/images/tuuhenbosi/t$go2.png',
+      'assets/images/tuuhenbosi/t$go3.png',
+      'assets/images/tuuhenbosi/t$go4.png',
+      'assets/images/tuuhenbosi/t$go5.png',
+      'assets/images/tuuhenbosi/t$go6.png',
+      'assets/images/tuuhenbosi/t$go7.png',
+      'assets/images/tuuhenbosi/t$go8.png',
+      'assets/images/tuuhenbosi/t$go9.png',
     ];
     //日支の２階支合等の文字を算出
     sigo = sigoL.substring(nitiSi * 12, (nitiSi + 1) * 12);
@@ -430,32 +446,36 @@ class KyouUnseiModel extends ChangeNotifier {
       kangouMoji = '';
     }
     // 説明文１
-    moji[0] = '　上の円は日干による運勢、下の円は日支による運勢を表しています。'
-        'V印は鑑定者の持つ日干と日支の位置を表します。'
-        '日干が陽の人は、比肩・劫敗・食神・傷官・偏財・正財・偏官・正官・倒食・印綬、'
-        '日干が陰の人は、比肩・傷官・食神・正財・偏財・正官・偏官・印綬・倒食・劫敗、'
-        'の順に星が巡ります。'
+    moji[0] = '　左の円は日干による運勢、右の円は日支による運勢を表しています。'
+        'V印は鑑定者の持つ日干と日支の位置を表します。　'
+        '日干が陽の人は、比肩・劫敗・食神・傷官・・・・倒食・印綬、　'
+        '日干が陰の人は、比肩・傷官・食神・正財・・・・倒食・劫敗、　'
+        'の順に星が巡ります。　'
         '巡って来ている星の場所がピンクで表されています。';
-    moji[1] = '　日支も順に巡っていきます。こちらも支合・三合・支冲・害・刑が複雑に現れます。'
+    moji[1] = '　日支も順に巡っていきます。こちらも支合・三合・支冲・害・刑が複雑に現れます。　'
         'その現れるところがピンクで表されています。';
     moji[2] = '　さらに甲と己・ 丙と辛・ 戊と癸・ 庚と乙・ 壬と丁は干合関係にあり、'
         '運勢を押しあげます。'
         '';
-    moji[3] = '　おおよその運勢を示すと、'
-        '吉は、食神・偏財・正財・正官・倒食・印綬・干合・支合・三合、'
-        '凶は、劫敗・傷官・偏官・支冲・害・刑、'
-        '半吉半凶は、比肩です。'
-        'それをポイントにしておおよその鑑定日の運勢を、'
+    moji[3] = '　おおよその運勢を示すと、　'
+        '吉は、食神・偏財・正財・正官・倒食・印綬・干合・支合・三合、　'
+        '凶は、劫敗・傷官・偏官・支冲・害・刑、　'
+        '半吉半凶は、比肩です。　'
+        'それをポイントにしておおよその鑑定日の運勢を、　'
         '大吉・中吉・小吉・平・小凶・中凶・大凶の7段階で表示しています。'
         '';
     moji[4] = '　しかし、例えば、凶星の傷官ですが、よく感が働くという点では、感が要求される職場では、吉ともとれますし、'
-        '同様に、凶星の偏官も体を痛めるほど仕事が忙しいという点では、例えば水商売的なの職場の人にとっては吉ともとれます。'
-        '詳細は、各星の内容を見る必要があります。'
+        '同様に、凶星の偏官も体を痛めるほど仕事が忙しいという点では、例えば水商売的なの職場の人にとっては吉ともとれます。　'
+        '詳細は、各星の内容を見る必要があります。　'
         'また、総合で吉でも、支冲や害や刑がある場合は、'
         '売り上げは伸びてもトラブルがあるように吉凶両面含むので、気を付ける必要があります。';
-    moji[5] = '１．「日干」からみた $nowMoji の運勢';
-    moji[6] = '　　生年月日の日干：壬（みずのえ）';
-    moji[7] = '　　　鑑定日の日干：丁（ひのと）';
+    moji[5] = '２．「日干」からみた $nowMoji の運勢';
+    nitiKan = meisikiA(seinenInt, seigatuInt, seinitiInt).substring(4, 5); // 6.1.3 日干を算出
+    nitikanYomi = juKanYomi(nitiKan);                                      // 6.1.3 日干のよみを算出
+    moji[6] = '　　生年月日の日干：$nitiKan（$nitikanYomi）';                  // 6.1.3 日干を表示
+    nowNitiKanMoji = meisikiA(nowNen, nowGatu, nowNiti).substring(4, 5);   // 6.1.3 鑑定日の日干を算出
+    nowNitiKanYomi = juKanYomi(nowNitiKanMoji);                            // 6.1.3 鑑定日の日干のよみを算出
+    moji[7] = '　　　鑑定日の日干：$nowNitiKanMoji（$nowNitiKanYomi）';        // 6.1.3 鑑定日の日干を表示
     moji[8] = '　　鑑定日の通変星：$nowTuhen（$tuhenYomi）';
     takasaMoji[0] = 200.0;
     takasaMoji[1] = 100.0;
@@ -1147,18 +1167,23 @@ class KyouUnseiModel extends ChangeNotifier {
     }
 //  支合・支冲等関係図を算出する
     // 解説２
-    moji[44] = '２．「日支」からみた今日の運勢';
-    moji[45] = '';
-    moji[46] = '';
+    moji[44] = '３．「日支」からみた $nowMoji の運勢';
+    nitiSiMoji = meisikiA(seinenInt, seigatuInt, seinitiInt).substring(5, 6);  // 6.1.3 日支を算出
+    nitiSiYomi = juuniSiYomi(nitiSiMoji);                                      // 6.1.3 日支のよみを算出
+    moji[45] = '　　生年月日の日支：$nitiSiMoji（$nitiSiYomi）';                   // 6.1.3
+    nowNitiSiMoji = meisikiA(nowNen, nowGatu, nowNiti).substring(5, 6);        // 6.1.3 鑑定日の日干を算出
+    nowNitiSiYomi = juuniSiYomi(nowNitiSiMoji);                                // 6.1.3 鑑定日の日干のよみを算出
+    moji[46] = '　　　鑑定日の日支：$nowNitiSiMoji（$nowNitiSiYomi）';             // 6.1.3
     moji[47] = '';
     moji[48] = '';
     takasaMoji[44] = 40;
-    takasaMoji[45] = 0;
-    takasaMoji[46] = 0;
+    takasaMoji[45] = 30;
+    takasaMoji[46] = 30;
     takasaMoji[47] = 0;
     takasaMoji[48] = 0;
 
     iroMoji[44] = iroGreen;
+    iroMoji[49] = iroPink1;
     //　支合を算出する
     var sigouNow = sigouKei.substring(
         nitiSi * 12 + nowNitiSi * 1, nitiSi * 12 + nowNitiSi * 1 + 1);
@@ -1168,9 +1193,9 @@ class KyouUnseiModel extends ChangeNotifier {
           '大きな気が発生します。';
 
       moji[51] = '■吉ポイントは、プラス20です。';
-      takasaMoji[49] = 40;
+      takasaMoji[49] = 60;
       takasaMoji[50] = 50;
-      takasaMoji[51] = 80;
+      takasaMoji[51] = 120;
       kitiPointNissi = 20;
     } else if (sigouNow == '三') {
       moji[49] = '三合（さんごう）があります';
@@ -1178,7 +1203,7 @@ class KyouUnseiModel extends ChangeNotifier {
           '一人一人は弱くても三人そろうと大きな気を発生します。'
           '二人そろった半会（はんかい）でもそれなりの気を発生します。';
       moji[51] = '■吉ポイントは、プラス10です。';
-      takasaMoji[49] = 40;
+      takasaMoji[49] = 60;
       takasaMoji[50] = 100;
       takasaMoji[51] = 80;
       kitiPointNissi = 10;
@@ -1188,7 +1213,7 @@ class KyouUnseiModel extends ChangeNotifier {
           '冲 は、同性同士の殴り合いを意味します。'
           '同性同士なので、激しく殴り合ったり、ひっかきあったり、気がうばわれます。';
       moji[51] = '■吉ポイントは、マイナス20です。';
-      takasaMoji[49] = 40;
+      takasaMoji[49] = 60;
       takasaMoji[50] = 100;
       takasaMoji[51] = 80;
       kitiPointNissi = -20;
@@ -1197,7 +1222,7 @@ class KyouUnseiModel extends ChangeNotifier {
       moji[50] = ' 害　が巡ってくる日は、トラブルに巻き込まれないように注意が必要です。'
           '冲　に比べれば軽く、激しい喧嘩はしませんが、やはりトラブルなので、気はうばわれます。';
       moji[51] = '■吉ポイントは、マイナス10です。';
-      takasaMoji[49] = 40;
+      takasaMoji[49] = 60;
       takasaMoji[50] = 80;
       takasaMoji[51] = 80;
       kitiPointNissi = -10;
@@ -1206,7 +1231,7 @@ class KyouUnseiModel extends ChangeNotifier {
       moji[50] = '　刑 が巡ってくる日は、トラブルに巻き込まれないように注意が必要です。'
           '冲　に比べれば軽く、激しい喧嘩はしませんが、トラブルなので、やはり気はうばわれます。';
       moji[51] = '■吉ポイントは、マイナス10です。';
-      takasaMoji[49] = 40;
+      takasaMoji[49] = 60;
       takasaMoji[50] = 80;
       takasaMoji[51] = 80;
       kitiPointNissi = -10;
@@ -1217,7 +1242,7 @@ class KyouUnseiModel extends ChangeNotifier {
           '冲は、同性同士の殴り合いを意味します。'
           '刑は冲に比べれば軽く、激しい喧嘩はしませんが、やはりトラブルなので、気はうばわれます。';
       moji[51] = '■吉ポイントは、マイナス15です。　';
-      takasaMoji[49] = 40;
+      takasaMoji[49] = 60;
       takasaMoji[50] = 140;
       takasaMoji[51] = 80;
       kitiPointNissi = -15;
@@ -1227,7 +1252,7 @@ class KyouUnseiModel extends ChangeNotifier {
           '悪い作用が重なるのではなく、あるときは害になり、あるときは刑になります。'
           '刑は重いトラブル、害は軽いトラブルを意味します。トラブルなのでやはり気はうばわれます。';
       moji[51] = '■吉ポイントは、マイナス10です。　';
-      takasaMoji[49] = 40;
+      takasaMoji[49] = 60;
       takasaMoji[50] = 120;
       takasaMoji[51] = 80;
       kitiPointNissi = -10;
@@ -1237,7 +1262,7 @@ class KyouUnseiModel extends ChangeNotifier {
           '普段は仲のいい夫婦が急に大げんかするようなような意味です。'
           '仲がいいときは気を発生してますが、急に喧嘩して気がうばわれることもあります。';
       moji[51] = '■吉ポイントは、プラス10です。　';
-      takasaMoji[49] = 40;
+      takasaMoji[49] = 60;
       takasaMoji[50] = 100;
       takasaMoji[51] = 80;
       kitiPointNissi = 10;
@@ -1246,7 +1271,7 @@ class KyouUnseiModel extends ChangeNotifier {
       moji[50] = '　トラブルに注意が必要です。卯辰の害は、冲（ちゅう）のなぐりあいに匹敵する喧嘩を意味します。'
           '夫婦の激しい喧嘩の意味です。気は激しくうばわれます。';
       moji[51] = '■吉ポイントは、マイナス15です。';
-      takasaMoji[49] = 40;
+      takasaMoji[49] = 60;
       takasaMoji[50] = 80;
       takasaMoji[51] = 80;
       kitiPointNissi = -15;
@@ -1254,7 +1279,7 @@ class KyouUnseiModel extends ChangeNotifier {
       moji[49] = '　支合・三合・冲・害・刑はありません';
       moji[50] = '';
       moji[51] = '■吉ポイントは、プラスマイナス０です。';
-      takasaMoji[49] = 40;
+      takasaMoji[49] = 60;
       takasaMoji[50] = 0;
       takasaMoji[51] = 80;
       kitiPointNissi = 0;
@@ -1279,7 +1304,7 @@ class KyouUnseiModel extends ChangeNotifier {
     }
 
     // 解説３
-    moji[52] = '３．総合ポイント';
+    moji[52] = '１．総合ポイント';
     moji[53] = '　　　　　　日干：　$kitiPointNikann';
     moji[54] = '　　　　　　干合：　$kitiPointKangou';
     moji[55] = '　　　　　　日支：　$kitiPointNissi';
@@ -1293,7 +1318,14 @@ class KyouUnseiModel extends ChangeNotifier {
     takasaMoji[55] = 25;
     takasaMoji[56] = 25;
     takasaMoji[57] = 25;
-    takasaMoji[59] = 400;
+    takasaMoji[59] = 60;
     iroMoji[59] = iroPink1;
+
+    // 解説4
+    moji[60] = '４．この円チャートの見方';
+    takasaMoji[60] = 40;
+    iroMoji[60] = iroGreen;
+    moji[61] = '　あなたの幸福を心よりお祈りいたします';
+    takasaMoji[61] = 100;
   }
 }

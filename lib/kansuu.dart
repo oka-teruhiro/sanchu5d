@@ -1,5 +1,4 @@
 // 関数定義　十干から十干数を算出する
-//  c = zouKan(a, b)
 //  b = juKanNo( a )
 //   a: 十干を表す文字（'甲','乙',・・・,'癸'）
 //   b: 十干を表す数字（'0','1',・・・,'9' ）
@@ -26,6 +25,37 @@ juKanNo(String a) {
     b = 8;
   } else if (a == '癸') {
     b = 9;
+  } else {}
+  return b;
+}
+
+// 関数定義　十干から十干のよみがなを算出する
+//  b = juKanYomi( a )
+//   a: 十干を表す文字（'甲','乙',・・・,'癸'）
+//   b: 十干のよみがな（'きのえ','きのと',・・・,'みずのと' ）
+
+juKanYomi(String a) {
+  String b = 'みずのと';
+  if (a == '甲') {
+    b = 'きのえ';
+  } else if (a == '乙') {
+    b = 'きのと';
+  } else if (a == '丙') {
+    b = 'ひのえ';
+  } else if (a == '丁') {
+    b = 'ひのと';
+  } else if (a == '戊') {
+    b = 'つちのえ';
+  } else if (a == '己') {
+    b = 'つちのと';
+  } else if (a == '庚') {
+    b = 'かのえ';
+  } else if (a == '辛') {
+    b = 'かのと';
+  } else if (a == '壬') {
+    b = 'みずのえ';
+  } else if (a == '癸') {
+    b = 'みずのと';
   } else {}
   return b;
 }
@@ -61,9 +91,290 @@ juuniSiNo(String a) {
   } else if (a == '亥') {
     b = 11;
   } else {}
-  //b = 11;
   return b;
 }
+
+// 関数定義　十二支から十二支のよみがなを算出する
+//  b = juuniSiYomi( a )
+//   a: 十二支を表す文字（'子','丑',・・・,'亥'）
+//   b: 十二支を表す数字（'0','1',・・・,'11' ）
+juuniSiYomi(String a) {
+  String b = 'い';
+  if (a == '子') {
+    b = 'ね';
+  } else if (a == '丑') {
+    b = 'うし';
+  } else if (a == '寅') {
+    b = 'とら';
+  } else if (a == '卯') {
+    b = 'う';
+  } else if (a == '辰') {
+    b = 'たつ';
+  } else if (a == '巳') {
+    b = 'み';
+  } else if (a == '午') {
+    b = 'うま';
+  } else if (a == '未') {
+    b = 'ひつじ';
+  } else if (a == '申') {
+    b = 'さる';
+  } else if (a == '酉') {
+    b = 'とり';
+  } else if (a == '戌') {
+    b = 'いぬ';
+  } else if (a == '亥') {
+    b = 'い';
+  } else {}
+  return b;
+}
+
+// 関数定義　日干の文字列と日支の文字列から十二運の文字列を算出する
+// c = juuNiUnMoji(a,b)
+// a: 日干の文字列
+// b: 日支の文字列
+String juuNiUnMoji(String a, String b){
+  String juuniUn = //12運
+      '沐冠建帝衰病死墓絶胎養長' //甲
+      '病衰帝建冠沐長養胎絶墓死' //乙
+      '胎養長沐冠建帝衰病死墓絶' //丙
+      '絶墓死病衰帝建冠沐長養胎' //丁
+      '胎養長沐冠建帝衰病死墓絶' //戊
+      '絶墓死病衰帝建冠沐長養胎' //己
+      '死墓絶胎養長沐冠建帝衰病' //庚
+      '長養胎絶墓死病衰帝建冠沐' //辛
+      '帝衰病死墓絶胎養長沐冠建' //壬
+      '建冠沐長養胎絶墓死病衰帝'; //癸
+  int kanNo = juKanNo(a);
+  int siNo = juuniSiNo(b);
+  String c = juuniUn.substring(
+      kanNo * 12 + siNo, kanNo * 12 + siNo + 1);
+  return c;
+}
+
+// 関数定義　十二運の文字から十二運の数字を算出する
+// b = juuNiUnNo(a)
+// a: 十二運の文字列・１文字
+// b: 十二運を表す整数・（ 0 から 11 ）
+juuNiUnNo(String a){
+  int b = 11;
+  if (a == '胎') {
+    b = 0;
+  } else if (a == '養') {
+    b = 1;
+  } else if (a == '長') {
+    b = 2;
+  } else if (a == '沐') {
+    b = 3;
+  } else if (a == '冠') {
+    b = 4;
+  } else if (a == '建') {
+    b = 5;
+  } else if (a == '帝') {
+    b = 6;
+  } else if (a == '衰') {
+    b = 7;
+  } else if (a == '病') {
+    b = 8;
+  } else if (a == '死') {
+    b = 9;
+  } else if (a == '墓') {
+    b = 10;
+  } else if (a == '絶') {
+    b = 11;
+  } else {}
+  return b;
+}
+
+// 関数定義　十二運の文字から正しい十二運の文字を算出する
+// b = juuNiUnMojiA(a)
+// a: 十二運の文字列・１文字
+// b: 十二運を表す文字・（ ２文字もあり）
+juuNiUnMojiA(String a){
+  String b = '絶';
+  if (a == '胎') {
+    b = '胎';
+  } else if (a == '養') {
+    b = '養';
+  } else if (a == '長') {
+    b = '長生';
+  } else if (a == '沐') {
+    b = '沐浴';
+  } else if (a == '冠') {
+    b = '冠帯';
+  } else if (a == '建') {
+    b = '建禄';
+  } else if (a == '帝') {
+    b = '帝旺';
+  } else if (a == '衰') {
+    b = '衰';
+  } else if (a == '病') {
+    b = '病';
+  } else if (a == '死') {
+    b = '死';
+  } else if (a == '墓') {
+    b = '墓';
+  } else if (a == '絶') {
+    b = '絶';
+  } else {}
+  return b;
+}
+// 関数定義　十二運の文字から正しい十二運のよみがなを算出する
+// b = juuNiUnYomi(a)
+// a: 十二運の文字列・１文字
+// b: 十二運のよみがなを表す文字・（文字数いろいろ）
+juuNiUnYomi(String a){
+  String b = 'ぜつ';
+  if (a == '胎') {
+    b = 'たい';
+  } else if (a == '養') {
+    b = 'よう';
+  } else if (a == '長') {
+    b = 'ちょうせい';
+  } else if (a == '沐') {
+    b = 'もくよく';
+  } else if (a == '冠') {
+    b = 'かんたい';
+  } else if (a == '建') {
+    b = 'けんろく';
+  } else if (a == '帝') {
+    b = 'ていおう';
+  } else if (a == '衰') {
+    b = 'すい';
+  } else if (a == '病') {
+    b = 'びょう';
+  } else if (a == '死') {
+    b = 'し';
+  } else if (a == '墓') {
+    b = 'ぼ';
+  } else if (a == '絶') {
+    b = 'ぜつ';
+  } else {}
+  return b;
+}
+
+// 関数定義　十二運の文字から四旺・四平・四衰を算出する
+// b = juuNiUnSiou(a)
+// a: 十二運の文字列・１文字
+// b: 四旺・四平・四衰を表す文字・（ ２文字もあり）
+juuNiUnSiou(String a){
+  String b = '四衰';
+  if (a == '胎') {
+    b = '四平（しへい）';
+  } else if (a == '養') {
+    b = '四平（しへい）';
+  } else if (a == '長') {
+    b = '四旺（しおう）';
+  } else if (a == '沐') {
+    b = '四平（しへい）';
+  } else if (a == '冠') {
+    b = '四旺（しおう）';
+  } else if (a == '建') {
+    b = '四旺（しおう）';
+  } else if (a == '帝') {
+    b = '四旺（しおう）';
+  } else if (a == '衰') {
+    b = '四衰（しすい）';
+  } else if (a == '病') {
+    b = '四衰（しすい）';
+  } else if (a == '死') {
+    b = '四衰（しすい）';
+  } else if (a == '墓') {
+    b = '四平（しへい）';
+  } else if (a == '絶') {
+    b = '四衰（しすい）';
+  } else {}
+  return b;
+}
+
+// 関数定義　十二運の文字から四旺・四平・四衰を算出する
+// b = juuNiUnSiou(a)
+// a: 十二運の文字列・１文字
+// b: 四旺・四平・四衰を表す文字・（ ２文字もあり）
+juuNiUnSiouA(String a){
+  String b = '四衰';
+  if (a == '胎') {
+    b = '四平';
+  } else if (a == '養') {
+    b = '四平';
+  } else if (a == '長') {
+    b = '四旺';
+  } else if (a == '沐') {
+    b = '四平';
+  } else if (a == '冠') {
+    b = '四旺';
+  } else if (a == '建') {
+    b = '四旺';
+  } else if (a == '帝') {
+    b = '四旺';
+  } else if (a == '衰') {
+    b = '四衰';
+  } else if (a == '病') {
+    b = '四衰';
+  } else if (a == '死') {
+    b = '四衰';
+  } else if (a == '墓') {
+    b = '四平';
+  } else if (a == '絶') {
+    b = '四衰';
+  } else {}
+  return b;
+}
+
+// 関数定義　十二運の文字から四旺・四平・四衰を算出する
+// b = juuNiUnSiou(a)
+// a: 十二運の文字列・１文字
+// b: 四旺・四平・四衰を表す数字（0:四旺・1:四平・2:四衰）
+juuNiUnSiouNo(String a){
+  int b = 2;
+  if (a == '胎') {
+    b = 1;
+  } else if (a == '養') {
+    b = 1;
+  } else if (a == '長') {
+    b = 0;
+  } else if (a == '沐') {
+    b = 1;
+  } else if (a == '冠') {
+    b = 0;
+  } else if (a == '建') {
+    b = 0;
+  } else if (a == '帝') {
+    b = 0;
+  } else if (a == '衰') {
+    b = 2;
+  } else if (a == '病') {
+    b = 2;
+  } else if (a == '死') {
+    b = 2;
+  } else if (a == '墓') {
+    b = 1;
+  } else if (a == '絶') {
+    b = 2;
+  } else {}
+  return b;
+}
+
+// 関数定義四旺四衰No.から運勢ポイントを算出する
+// d = unseiPoint(a, b, c)
+// a: 日柱の四旺四衰No.(0:四旺、1:四平、2:四衰）
+// b: 月柱の四旺四衰No.(0:四旺、1:四平、2:四衰）
+// c: 年柱の四旺四衰No.(0:四旺、1:四平、2:四衰）
+// d: 運勢ポイント（10-100)
+unseiPoint(int a, int b, int c) {
+  int d = 100;
+  int ed = 10;
+  int em = 10;
+  int ey = 10;
+  if(a == 0){ed = 10;} else if(a == 1){ed = 3;}else{ed = 1;}
+  if(b == 0){em = 10;} else if(b == 1){em = 3;}else{em = 1;}
+  if(c == 0){ey = 10;} else if(c == 1){ey = 3;}else{ey = 1;}
+  d = 6 * ed + 3 * em + 1 * ey ;
+  //print('a:$a b:$b c:$c ed:$ed em:$em ey:$ey d:$d');
+  return d;
+}
+
+
+
 
 // 関数定義　文字列リストから検索文字列が先頭から何文字目にあるか返す
 //  c = nanmojime(a,b)

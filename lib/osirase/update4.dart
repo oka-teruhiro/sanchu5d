@@ -6,24 +6,24 @@ class Update4 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<String> zu = [
-      'images/0.jpg',
-      'images/main/取説4a.jpg',
-      'images/main/取説4b.jpg',
-      'images/0.jpg',
-      'images/0.jpg',
-      'images/0.jpg',
-      'images/0.jpg',
-      'images/0.jpg',
-      'images/0.jpg',
-      'images/0.jpg',
-      'images/0.jpg',
-      'images/0.jpg',
-      'images/0.jpg',
-      'images/0.jpg',
-      'images/0.jpg',
-      'images/0.jpg',
-      'images/0.jpg',
-      'images/0.jpg',
+      'assets/images/0.jpg',
+      'assets/images/main/取説4a.jpg',
+      'assets/images/main/取説4b.jpg',
+      'assets/images/0.jpg',
+      'assets/images/0.jpg',
+      'assets/images/0.jpg',
+      'assets/images/0.jpg',
+      'assets/images/0.jpg',
+      'assets/images/0.jpg',
+      'assets/images/0.jpg',
+      'assets/images/0.jpg',
+      'assets/images/0.jpg',
+      'assets/images/0.jpg',
+      'assets/images/0.jpg',
+      'assets/images/0.jpg',
+      'assets/images/0.jpg',
+      'assets/images/0.jpg',
+      'assets/images/0.jpg',
     ];
     List<double> takasaZu = [
       0,
@@ -143,7 +143,14 @@ class Update4 extends StatelessWidget {
               width: 90,
               height: 36,
               child: ElevatedButton(
-                child: const Text('戻る'),
+                child: const Text(
+                  '戻る',
+                  style: TextStyle(
+                    color: Colors.greenAccent,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
                 onPressed: () {
                   Navigator.pop(context);
                 },

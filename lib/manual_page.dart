@@ -26,7 +26,7 @@ class ManualPage extends StatelessWidget {
 
             title: SizedBox(
               height: 250,
-                child: Image.asset('images/main/占い師天運.jpg'),
+                child: Image.asset('assets/images/main/占い師天運.jpg'),
             ), // 52
           ),
           const ListTile(
@@ -36,7 +36,7 @@ class ManualPage extends StatelessWidget {
           ListTile(
             title: SizedBox(
               height: 150,
-                child: Image.asset('images/main/QR_v6_manual.png'),
+                child: Image.asset('assets/images/main/QR_v6_manual.png'),
             ), // 52
           ),
           const Divider(

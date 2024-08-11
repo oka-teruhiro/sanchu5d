@@ -16,7 +16,7 @@ dependencies:
     # 日本語化するために0.18.1 を　0.18.0 にする必要あり(2023.6.11)
   intl: ^0.19.0
   cupertino_icons: ^1.0.8
-  firebase_core: ^3.2.0
+  firebase_core: ^3.3.0
   firebase_analytics: ^11.2.0
   #connectivity_plus: ^5.0.2
   # ■■■■■■■■■動画を再生するために必要なパッケージ■■■■■■■■■
@@ -30,6 +30,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  #flutter_lints: ^2.0.0
   flutter_native_splash: ^2.4.1
 flutter_native_splash:
   image: "assets/images/icon/icon_uranai_x1024.png"

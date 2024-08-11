@@ -6,12 +6,12 @@ class Update4d extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<String> zu = [
-      'images/0.jpg',
-      'images/main/取説4e.jpg',
-      'images/main/取説4f.jpg',
-      'images/0.jpg',
-      'images/0.jpg',
-      'images/0.jpg',
+      'assets/images/0.jpg',
+      'assets/images/main/取説4e.jpg',
+      'assets/images/main/取説4f.jpg',
+      'assets/images/0.jpg',
+      'assets/images/0.jpg',
+      'assets/images/0.jpg',
     ];
     List<double> takasaZu = [
       0,
@@ -94,30 +94,20 @@ class Update4d extends StatelessWidget {
               },
             ),
           ),
-          // Padding(
-          //   padding: const EdgeInsets.all(16.0),
-          //   child: SizedBox(
-          //     width: 300,
-          //     height: 36,
-          //     child: ElevatedButton(
-          //       child: const Text('命式チャートページ（工事中）'),
-          //       onPressed: () {
-          //         // Navigator.push(
-          //         //     context,
-          //         //     MaterialPageRoute(
-          //         //       builder: (context) => const MeisikiChartPage2(),
-          //         //     ));
-          //       },
-          //     ),
-          //   ),
-          // ),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: SizedBox(
               width: 90,
               height: 36,
               child: ElevatedButton(
-                child: const Text('戻る'),
+                child: const Text(
+                  '戻る',
+                  style: TextStyle(
+                    color: Colors.greenAccent,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
                 onPressed: () {
                   Navigator.pop(context);
                 },

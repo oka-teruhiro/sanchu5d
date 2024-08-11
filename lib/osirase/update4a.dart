@@ -6,10 +6,10 @@ class Update4a extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<String> zu = [
-      'images/0.jpg',
-      'images/0.jpg',
-      'images/0.jpg',
-      'images/0.jpg',
+      'assets/images/0.jpg',
+      'assets/images/0.jpg',
+      'assets/images/0.jpg',
+      'assets/images/0.jpg',
     ];
     List<double> takasaZu = [
       0,
@@ -89,7 +89,14 @@ class Update4a extends StatelessWidget {
               width: 90,
               height: 36,
               child: ElevatedButton(
-                child: const Text('戻る'),
+                child: const Text(
+                  '戻る',
+                  style: TextStyle(
+                    color: Colors.greenAccent,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
                 onPressed: () {
                   Navigator.pop(context);
                 },

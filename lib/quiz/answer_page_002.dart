@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:sanchu5d/main.dart';
-import 'package:sanchu5d/quiz/quiz_page_003.dart';
+import '../input_page.dart';
+import '../quiz/quiz_page_003.dart';
 
 class AnswerPage002 extends StatelessWidget {
-  const AnswerPage002({super.key});
+  final String apptitle;
+  const AnswerPage002({
+    super.key,
+    required this.apptitle,
+  });
 
   final bool quizLast = false;
 
@@ -18,7 +22,7 @@ class AnswerPage002 extends StatelessWidget {
             child: ListView(children: <Widget>[
               Column(children: [
                 ListTile(
-                  title: Image.asset('images/quiz/Q002/A0020.png'),
+                  title: Image.asset('assets/images/quiz/Q002/A0020.png'),
                 ),
                 SizedBox(
                     height: 60,
@@ -30,30 +34,45 @@ class AnswerPage002 extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               ElevatedButton(
-                                child: const Text('<< ホームページ'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(4.0),
+                                  ),
+                                ),
+                                child: const Text('<< ホームページ',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),),
                                 onPressed: () {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => const MyHomePage(
-                                          title: '',
+                                        builder: (context) => InputPage(
+                                          apptitle: apptitle,
                                         ),
                                       ));
                                 },
                               ),
                               ElevatedButton(
-                                child: const Text('次の問題 >'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(4.0),
+                                  ),
+                                ),
+                                child: const Text('次の問題 >',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),),
                                 onPressed: () {
                                   if (quizLast == true) {
-                                    //_showQuizLast(context);
                                   } else {
-                                    //quizNoMoji = (quizNo + 2).toString();
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => QuizPage003(
-                                            //quizNoMoji: quizNoMoji,
-                                            //bestQuizNoMoji: bestQuizNoMoji,
+                                          apptitle: apptitle,
                                             ),
                                       ),
                                     );

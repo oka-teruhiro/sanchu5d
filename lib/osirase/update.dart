@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:sanchu5d/osirase/profile.dart';
-import 'package:sanchu5d/osirase/update1.dart';
-import 'package:sanchu5d/osirase/update2.dart';
-import 'package:sanchu5d/osirase/update2a.dart';
-import 'package:sanchu5d/osirase/update3.dart';
-import 'package:sanchu5d/osirase/update3a.dart';
-import 'package:sanchu5d/osirase/update4.dart';
-import 'package:sanchu5d/osirase/update4a.dart';
-import 'package:sanchu5d/osirase/update4b.dart';
-import 'package:sanchu5d/osirase/update4c.dart';
-import 'package:sanchu5d/osirase/update4d.dart';
-import 'package:sanchu5d/osirase/update4e.dart';
-import 'package:sanchu5d/osirase/update5a.dart';
-//import 'package:sanchu5d/osirase/update5b.dart';
+
+//import '../osirase/profile.dart';
+import '../osirase/update1.dart';
+import '../osirase/update2.dart';
+import '../osirase/update2a.dart';
+import '../osirase/update3.dart';
+import '../osirase/update3a.dart';
+import '../osirase/update4.dart';
+import '../osirase/update4a.dart';
+import '../osirase/update4b.dart';
+import '../osirase/update4c.dart';
+import '../osirase/update4d.dart';
+import '../osirase/update4e.dart';
+import '../osirase/update5a.dart';
+//import '../osirase/update5b.dart';
 
 class Update extends StatelessWidget {
   const Update({super.key});
@@ -35,6 +36,24 @@ class Update extends StatelessWidget {
           Expanded(
             child: ListView(
               children: <Widget>[
+                const Divider(
+                  color: Colors.blue,
+                ),
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: ListTile(
+                    title: Text('第6.1版　次の機能追加の準備として、UIを全面的に整理しました。'
+                        '（2024.7.27更新）'),
+                    /*trailing: const Icon(Icons.navigate_next),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const Update5b(),
+                          ));
+                    },*/
+                  ),
+                ),
                 const Divider(
                   color: Colors.blue,
                 ),
@@ -267,7 +286,7 @@ class Update extends StatelessWidget {
                 const Divider(
                   color: Colors.blue,
                 ),
-                Padding(
+                /*Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: ListTile(
                     title: const Text('プロフィール'),
@@ -280,9 +299,16 @@ class Update extends StatelessWidget {
                           ));
                     },
                   ),
-                ),
+                ),*/
                 ElevatedButton(
-                  child: const Text('戻る'),
+                  child: const Text(
+                    '戻る',
+                    style: TextStyle(
+                      color: Colors.greenAccent,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
                   onPressed: () {
                     Navigator.pop(context);
                   },

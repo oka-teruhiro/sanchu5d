@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:sanchu5d/main.dart';
-import 'package:sanchu5d/quiz/quiz_page_002.dart';
+import '../quiz/quiz_page_002.dart';
+import '../input_page.dart';
 
 class AnswerPage001 extends StatelessWidget {
-  const AnswerPage001({super.key});
+  final String apptitle;
+  const AnswerPage001({
+    super.key,
+    required this.apptitle,
+  });
 
   final bool quizLast = false;
 
@@ -18,13 +22,13 @@ class AnswerPage001 extends StatelessWidget {
             child: ListView(children: <Widget>[
               Column(children: [
                 ListTile(
-                  title: Image.asset('images/quiz/Q001/A0010.png'),
+                  title: Image.asset('assets/images/quiz/Q001/A0010.png'),
                 ),
                 ListTile(
-                  title: Image.asset('images/quiz/Q001/A0011.png'),
+                  title: Image.asset('assets/images/quiz/Q001/A0011.png'),
                 ),
                 ListTile(
-                  title: Image.asset('images/quiz/Q001/A0012.png'),
+                  title: Image.asset('assets/images/quiz/Q001/A0012.png'),
                 ),
                 SizedBox(
                     height: 60,
@@ -36,30 +40,46 @@ class AnswerPage001 extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               ElevatedButton(
-                                child: const Text('<< ホームページ'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(4.0),
+                                  ),
+                                ),
+                                child: const Text('<< ホームページ',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),),
                                 onPressed: () {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => const MyHomePage(
-                                          title: '',
+                                        builder: (context) => InputPage(
+                                           apptitle: apptitle,
                                         ),
                                       ));
                                 },
                               ),
                               ElevatedButton(
-                                child: const Text('次の問題 >'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(4.0),
+                                  ),
+                                ),
+                                child: const Text('次の問題 >',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),),
                                 onPressed: () {
                                   if (quizLast == true) {
-                                    //_showQuizLast(context);
                                   } else {
                                     //quizNoMoji = (quizNo + 2).toString();
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => QuizPage002(
-                                            //quizNoMoji: quizNoMoji,
-                                            //bestQuizNoMoji: bestQuizNoMoji,
+                                          apptitle: apptitle,
                                             ),
                                       ),
                                     );

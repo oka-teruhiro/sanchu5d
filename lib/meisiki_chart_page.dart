@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 
 import 'kansuu.dart';
 
-class MeisikiChartPage4 extends StatefulWidget {
+class MeisikiChartPage extends StatefulWidget {
   final int seinenInt;
   final int seigatuInt;
   final int seinitiInt;
-  const MeisikiChartPage4({
+  const MeisikiChartPage({
     super.key,
     required this.seinenInt,
     required this.seigatuInt,
@@ -16,10 +16,10 @@ class MeisikiChartPage4 extends StatefulWidget {
   });
 
   @override
-  State<MeisikiChartPage4> createState() => _MeisikiChartPage4State();
+  State<MeisikiChartPage> createState() => _MeisikiChartPageState();
 }
 
-class _MeisikiChartPage4State extends State<MeisikiChartPage4> {
+class _MeisikiChartPageState extends State<MeisikiChartPage> {
   int counter = 0;
   int counterY = 0; // 鑑定年カウンタ
   int counterM = 0; // 鑑定年カウンタ

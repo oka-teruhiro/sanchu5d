@@ -6,23 +6,23 @@ class Setuiribi extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<String> zu = [
-      'images/main/taxi.png',
-      'images/0.jpg',
-      'images/0.jpg',
-      'images/0.jpg',
-      'images/0.jpg',
-      'images/0.jpg',
-      'images/0.jpg',
-      'images/0.jpg',
-      'images/0.jpg',
-      'images/0.jpg',
-      'images/0.jpg',
-      'images/0.jpg',
-      'images/0.jpg',
-      'images/0.jpg',
-      'images/0.jpg',
-      'images/0.jpg',
-      'images/0.jpg',
+      'assets/images/main/taxi.png',
+      'assets/images/0.jpg',
+      'assets/images/0.jpg',
+      'assets/images/0.jpg',
+      'assets/images/0.jpg',
+      'assets/images/0.jpg',
+      'assets/images/0.jpg',
+      'assets/images/0.jpg',
+      'assets/images/0.jpg',
+      'assets/images/0.jpg',
+      'assets/images/0.jpg',
+      'assets/images/0.jpg',
+      'assets/images/0.jpg',
+      'assets/images/0.jpg',
+      'assets/images/0.jpg',
+      'assets/images/0.jpg',
+      'assets/images/0.jpg',
     ];
     List<double> takasaZu = [
       0,
@@ -45,10 +45,12 @@ class Setuiribi extends StatelessWidget {
     ];
     List<String> moji = [
       '　節入り日時とは、簡単にいうと、四柱推命で使う暦（こよみ）の月の始まり日時を意味します。',
-      '　誕生日がこの節入り日に一致する方で、この節入り時刻前に生まれている場合は、月の柱の天干地支を前の月として計算する必要があります。',
+      '　誕生日がこの節入り日に一致する方で、この節入り時刻前に生まれている場合は、'
+          '月の柱の天干地支を前の月として計算する必要があります。',
       '①　節入り時刻よりも前に誕生した方は、右上の「節入り時刻前」ボタンを押してください。',
       '②　節入り時刻よりも後に誕生した方は、このままの命式表になります。',
-      '③　誕生時刻がわからない方は、「節入り時刻前」ボタンも押して2種類の命式表で鑑定し比べ、自分にしっくりくる命式表で鑑定してください。',
+      '③　誕生時刻がわからない方は、「節入り時刻前」ボタンも押して2種類の命式表で鑑定し比べ、'
+          '自分にしっくりくる命式表で鑑定してください。',
       '',
       '',
       '',
