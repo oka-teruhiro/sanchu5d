@@ -1,4 +1,4 @@
-import 'package:firebase_analytics/firebase_analytics.dart';
+//import 'package:firebase_analytics/firebase_analytics.dart'; // 5.1.14
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -8,16 +8,17 @@ import 'package:sanchu5d/output/kyou_unsei_page.dart';
 import 'package:sanchu5d/output/output4.dart';
 import 'package:sanchu5d/quiz/quiz_page_001.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
+//import 'package:firebase_core/firebase_core.dart';    // 5.1.14
+//import 'firebase_options.dart';                       // 5.1.14
 
 import 'osirase/update.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+//void main() async { // 5.1.14
+void main() {         // 5.1.14
+  //WidgetsFlutterBinding.ensureInitialized(); // 5.1.14
+  //await Firebase.initializeApp(              // 5.1.14
+  //  options: DefaultFirebaseOptions.currentPlatform, // 5.1.14
+  //);                                           // 5.1.14
   runApp(const MyApp());
 }
 
@@ -228,7 +229,7 @@ class _MyHomePageState extends State<MyHomePage> {
       child: Scaffold(
         backgroundColor: Colors.black,
         appBar: AppBar(
-          title: const Text('天運三柱推命 ver.5.1.12',
+          title: const Text('天運三柱推命 ver.5.1.16', // todo 5.1.14
               style: TextStyle(
                 color: Colors.pinkAccent,
                 fontWeight: FontWeight.bold,
@@ -382,9 +383,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                   '運勢',
                                 ),
                                 onPressed: () {
-                                  FirebaseAnalytics.instance.logEvent(
-                                    name: 'ボタンが押されました・運勢・5d',
-                                  );
+                                  //FirebaseAnalytics.instance.logEvent( // 5.1.14
+                                  //  name: 'ボタンが押されました・運勢・5d', // 5.1.14
+                                  //);                                   // 5.1.14
                                   //ToDo　今日の運勢画面に飛ぶ
                                   seinengappiMojia = _birthD[index];
                                   if (seinengappiMojia == '生年月日') {

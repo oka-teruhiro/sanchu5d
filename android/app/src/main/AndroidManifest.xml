@@ -1,4 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- インターネット権限を追加・5.1.13 -->
+    <!--<uses-permission android:name="android.permission.INTERNET" /> -->
     <application
         android:label="三柱推命"
         android:name="${applicationName}"
