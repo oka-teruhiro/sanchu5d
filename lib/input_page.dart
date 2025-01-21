@@ -252,7 +252,7 @@ class _InputPageState extends State<InputPage> {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>   const ManualPage(),
-                      ),
+                      )
                     );
                   },
                 ),
@@ -443,7 +443,7 @@ class _InputPageState extends State<InputPage> {
         context: context,
         builder: (BuildContext context) {
           return SizedBox(
-            height: 280,
+            height: 360,
             child: Container(
               color: Colors.white12,
               child: Column(
