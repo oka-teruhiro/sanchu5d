@@ -7,8 +7,16 @@ import '../tenun_page.dart';
 import '../meisiki_chart_page.dart';
 import 'kyou_unsei_page.dart';
 import 'input_page.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();  // 追加
+
+  // Firebase初期化を追加
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 

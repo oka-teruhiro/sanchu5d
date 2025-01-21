@@ -40,19 +40,7 @@
   
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
   
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+
   <style id="splash-screen-style">
     html {
       height: 100%
@@ -124,8 +112,15 @@
       document.body.style.background = "transparent";
     }
   </script>
+
+  <!-- Firebase SDK の追加 -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
+
 </head>
 <body>
+
+
   <picture id="splash">
       <source srcset="splash/img/light-1x.png 1x, splash/img/light-2x.png 2x, splash/img/light-3x.png 3x, splash/img/light-4x.png 4x" media="(prefers-color-scheme: light)">
       <source srcset="splash/img/dark-1x.png 1x, splash/img/dark-2x.png 2x, splash/img/dark-3x.png 3x, splash/img/dark-4x.png 4x" media="(prefers-color-scheme: dark)">
@@ -155,5 +150,19 @@
     });
   </script>
 
+  <!-- Firebase の初期化スクリプト -->
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyArTz0OEbgIfdWMFwjxdQ_Tp_rw2Wit5uQ",
+      projectId: "sanchu5d",
+      storageBucket: "sanchu5d.firebasestorage.app",
+      messagingSenderId: "918808658797",
+      appId: "1:918808658797:android:1376d252e616cbbfaa5064"
+    };
+    firebase.initializeApp(firebaseConfig);
+  </script>
 
-</body></html>
+
+
+</body>
+</html>
