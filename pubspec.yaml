@@ -1,7 +1,7 @@
 name: sanchu5d
 description: "天運三柱推命ver6"
 publish_to: 'none' # pub.dev に公開したい場合はこの行を削除してください。
-version: 6.1.47+32
+version: 6.2.1+32
 
 environment:
   sdk: '>=3.3.4 <4.0.0'
@@ -16,8 +16,9 @@ dependencies:
     # 日本語化するために0.18.1 を　0.18.0 にする必要あり(2023.6.11)
   intl: ^0.19.0
   cupertino_icons: ^1.0.8
-  firebase_core: ^3.3.0
+  firebase_core: ^3.10.0
   firebase_analytics: ^11.2.1
+  cloud_firestore: ^5.6.1  # 追加
   #connectivity_plus: ^5.0.2
   # ■■■■■■■■■動画を再生するために必要なパッケージ■■■■■■■■■
   #video_player: ^2.8.5
