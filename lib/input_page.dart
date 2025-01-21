@@ -6,6 +6,9 @@ import '../quiz/quiz_page_001.dart';
 import '../side_menu.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'main.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';  // 追加
+import '../services/omikuji_service.dart';  // 追加
+import '../models/omikuji.dart';  // 追加
 
 class InputPage extends StatefulWidget {
   const InputPage({
@@ -69,6 +72,8 @@ class _InputPageState extends State<InputPage> {
   int seiNen = 2000;
   int seiGatu = 1;
   int seiNiti = 1;
+
+  final OmikujiService _omikujiService = OmikujiService();
 
   @override
   void initState() {
@@ -195,6 +200,82 @@ class _InputPageState extends State<InputPage> {
     } else {}
   }
 
+  // おみくじ取得関数 v.6.2.2
+  Future<void> _drawOmikuji()  async {
+    try {
+      // ローディング表示
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return const Center(
+              child: CircularProgressIndicator(
+                color: Colors.tealAccent,
+              ),
+            );
+          },
+      );
+
+      // データー取得
+      final snapshot = await FirebaseFirestore.instance
+          .collection('omikuji').get();
+
+      // ローディング終了
+      if (mounted) Navigator.pop(context);
+
+      // データー件数確認
+      if (snapshot.docs.isEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text('おみくじがありません'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        return;
+      }
+
+      // 取得成功時の確認ダイアログ
+      if (mounted) {
+        await showDialog(
+            context: context,
+          builder: (BuildContext context) {
+              return AlertDialog(
+                backgroundColor: Colors.grey[900],
+                title: const Text(
+                    'データ取得確認',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text(
+                        'OK',
+                        style: TextStyle(color: Colors.tealAccent),
+                      ),
+                  ),
+                ],
+              );
+          },
+        );
+
+      }
+
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('エラーが発生しました: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
      var drawer = Drawer(
@@ -240,21 +321,14 @@ class _InputPageState extends State<InputPage> {
                         WidgetStateProperty.all<Color>(Colors.black),
                   ),
                   child: const Text(
-                    'このアプリの使い方を見る',
+                    'おみくじを引く',
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>   const ManualPage(),
-                      )
-                    );
-                  },
+                  onPressed: _drawOmikuji,
                 ),
               ),
               SizedBox(
