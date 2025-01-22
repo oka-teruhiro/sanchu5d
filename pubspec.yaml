@@ -16,9 +16,9 @@ dependencies:
     # 日本語化するために0.18.1 を　0.18.0 にする必要あり(2023.6.11)
   intl: ^0.19.0
   cupertino_icons: ^1.0.8
-  firebase_core: ^3.10.0
-  firebase_analytics: ^11.2.1
-  cloud_firestore: ^5.6.1  # 追加
+  firebase_core: ^2.24.2
+  firebase_analytics: ^10.8.0
+  cloud_firestore: ^4.14.0
   #connectivity_plus: ^5.0.2
   # ■■■■■■■■■動画を再生するために必要なパッケージ■■■■■■■■■
   #video_player: ^2.8.5
@@ -27,6 +27,7 @@ dependencies:
   provider: ^6.1.2
   shared_preferences: ^2.3.1
   #webview_flutter: ^4.8.0
+  win32: ^5.10.0  # 明示的にバージョンを指定
 
 dev_dependencies:
   flutter_test:

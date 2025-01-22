@@ -38,6 +38,7 @@ android {
     //compileSdk flutter.compileSdkVersion // 5.1.14
     compileSdk 34 // 5.1.14
     //ndkVersion flutter.ndkVersion //5.1.14
+    //compileSdkVersion 34
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

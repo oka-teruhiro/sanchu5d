@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -218,7 +220,9 @@ class _InputPageState extends State<InputPage> {
 
       // データー取得
       final snapshot = await FirebaseFirestore.instance
-          .collection('omikuji').get();
+          .collection('omikuji')
+          .where('isActive', isEqualTo: true ) // アクティブなおみくじのみ
+          .get();
 
       // ローディング終了
       if (mounted) Navigator.pop(context);
@@ -236,6 +240,7 @@ class _InputPageState extends State<InputPage> {
         return;
       }
 
+      /*
       // 取得成功時の確認ダイアログ
       if (mounted) {
         await showDialog(
@@ -262,6 +267,66 @@ class _InputPageState extends State<InputPage> {
           },
         );
 
+      } */
+
+      // ランダムにおみくじを１つ選択
+      final random = Random();
+      final randomDoc = snapshot.docs[random.nextInt(snapshot.docs.length)];
+      final omikuji = Omikuji.fromMap(randomDoc.id, randomDoc.data() );
+
+      // おみくじ結果を表示
+      if (mounted) {
+        await showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              backgroundColor: Colors.grey[900],
+              title: Text(
+                _getFortuneLevelText(omikuji.fortuneLevel),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ...omikuji.content.map((line) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Text(
+                        line,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                        textAlign: TextAlign.left,
+                      ),
+                    )),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text(
+                    '閉じる',
+                    style: TextStyle(
+                      color: Colors.tealAccent,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+
+        // 選択回数を更新
+        await _omikujiService.incrementSelectedCount(omikuji.id);
       }
 
     } catch (e) {
@@ -273,6 +338,28 @@ class _InputPageState extends State<InputPage> {
           ),
         );
       }
+    }
+  }
+
+  // 運勢レベルのテキスト取得関数を追加
+  String _getFortuneLevelText(int level) {
+    switch (level) {
+      case 7:
+        return '大吉';
+      case 6:
+        return '中吉';
+      case 5:
+        return '小吉';
+      case 4:
+        return '平';
+      case 3:
+        return '小凶';
+      case 2:
+        return '中凶';
+      case 1:
+        return '大凶';
+      default:
+        return '平';
     }
   }
 
