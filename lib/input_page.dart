@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:sanchu5d/widgets/omikuji_result_screen.dart';
 import '../manual_page.dart';
 import '../quiz/quiz_page_001.dart';
 import '../side_menu.dart';
@@ -11,6 +12,8 @@ import 'main.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';  // 追加
 import '../services/omikuji_service.dart';  // 追加
 import '../models/omikuji.dart';  // 追加
+import '../widgets/omikuji_result_screen.dart';
+import '../utils/fortune_level_utils.dart';
 
 class InputPage extends StatefulWidget {
   const InputPage({
@@ -240,40 +243,14 @@ class _InputPageState extends State<InputPage> {
         return;
       }
 
-      /*
-      // 取得成功時の確認ダイアログ
-      if (mounted) {
-        await showDialog(
-            context: context,
-          builder: (BuildContext context) {
-              return AlertDialog(
-                backgroundColor: Colors.grey[900],
-                title: const Text(
-                    'データ取得確認',
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-                actions: [
-                  TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text(
-                        'OK',
-                        style: TextStyle(color: Colors.tealAccent),
-                      ),
-                  ),
-                ],
-              );
-          },
-        );
-
-      } */
-
       // ランダムにおみくじを１つ選択
       final random = Random();
       final randomDoc = snapshot.docs[random.nextInt(snapshot.docs.length)];
       final omikuji = Omikuji.fromMap(randomDoc.id, randomDoc.data() );
 
+
+
+      /*
       // おみくじ結果を表示
       if (mounted) {
         await showDialog(
@@ -323,6 +300,30 @@ class _InputPageState extends State<InputPage> {
               ],
             );
           },
+        );
+        */
+      // おみくじ結果画面に遷移
+      if (mounted) {
+        await Navigator.push(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) =>
+                OmikujiResultScreen(omikuji: omikuji),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              const begin = Offset(0.0, 1.0);
+              const end = Offset.zero;
+              const curve = Curves.easeOutQuart;
+              var tween = Tween(begin: begin, end: end).chain(
+                CurveTween(curve: curve),
+              );
+              var offsetAnimation = animation.drive(tween);
+              return SlideTransition(
+                position: offsetAnimation,
+                child: child,
+              );
+            },
+            transitionDuration: const Duration(milliseconds: 800),
+          ),
         );
 
         // 選択回数を更新
