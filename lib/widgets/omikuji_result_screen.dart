@@ -1,4 +1,6 @@
 // lib/widgets/omikuji_result_screen.dart を新規作成
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:win32/win32.dart';
@@ -25,6 +27,8 @@ class _OmikujiResultScreenState extends State<OmikujiResultScreen>
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
+  List<String> _displayedChars = [];
+  Timer? _textTimer;
 
   @override
   void initState() {
@@ -41,11 +45,40 @@ class _OmikujiResultScreenState extends State<OmikujiResultScreen>
       parent: _controller,
       curve: Curves.easeOutCubic,
     ));
-    _controller.forward();
+    _controller.forward().then((_) {
+      _startTextAnimation();
+    });
+  }
+
+  void _startTextAnimation() {
+    final lines = widget.omikuji.content;
+    List<String> displayLines = List.filled(lines.length, '');
+    int currentLineIndex = 0;
+    int currentCharIndex = 0;
+
+    _textTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
+      if (currentLineIndex < lines.length) {
+        if (currentCharIndex < lines[currentLineIndex].length) {
+          setState(() {
+            displayLines[currentLineIndex] =
+                displayLines[currentLineIndex] +
+                    lines[currentLineIndex][currentCharIndex];
+          });
+          currentCharIndex++;
+        } else {
+          currentLineIndex++;
+          currentCharIndex = 0;
+        }
+        _displayedChars = displayLines;
+      } else {
+        timer.cancel();
+      }
+    });
   }
 
   @override
   void dispose() {
+    _textTimer?.cancel();
     _controller.dispose();
     super.dispose();
   }
@@ -68,23 +101,35 @@ class _OmikujiResultScreenState extends State<OmikujiResultScreen>
                 child: Container(
                   margin: const EdgeInsets.all(0),
                   padding: const EdgeInsets.all(0),
-
+                  alignment: Alignment.centerLeft,  // 左揃えを追加
 
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      ...widget.omikuji.content.asMap().entries.map((entry) {
+                        // 最大文字数を計算
+                        final maxLength = widget.omikuji.content
+                            .map((line) => line.length)
+                            .reduce((a, b) => a > b ? a : b);
 
-                      //const SizedBox(height: 20),
-                      ...widget.omikuji.content.map((line) => Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 0),
-                        child: Text(
-                          line,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
+                        // 現在の行の左パディングを計算
+                        final lineLength = entry.value.length;
+                        final padding = (maxLength - lineLength) * 10.0; // 文字サイズに応じて調整
+
+                        return Padding(
+                          padding: EdgeInsets.fromLTRB(padding, 0, 0, 0),  // vertical を fromLTRB に変更
+                          child: Container(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              _displayedChars.length > entry.key ? _displayedChars[entry.key] : '',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                              ),
+                            ),
                           ),
-                        ),
-                      )),
+                        );
+                      }),
                     ],
                   ),
                 ),
