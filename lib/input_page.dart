@@ -416,7 +416,11 @@ class _InputPageState extends State<InputPage> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  onPressed: _drawOmikuji,
+                  //onPressed: _drawOmikuji,
+                  onPressed: () {
+                    _showOmikuji(context);
+                    setState(() {});
+                  },
                 ),
               ),
               SizedBox(
@@ -814,5 +818,24 @@ class _InputPageState extends State<InputPage> {
             ),
           );
         });
+  }
+
+  // 画面下からおみくじの結果が出てくる
+  void _showOmikuji(BuildContext context){
+    double w0 = MediaQuery.of(context).size.width;
+    double h0 = MediaQuery.of(context).size.height;
+    double h1 = h0 * 0.9;
+    showBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return SizedBox(
+            width: w0,
+            height: h1,
+            child: Container(
+              color: Colors.amber,
+            ),
+          );
+        },
+    );
   }
 }
