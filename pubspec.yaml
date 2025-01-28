@@ -27,8 +27,9 @@ dependencies:
   provider: ^6.1.2
   shared_preferences: ^2.3.1
   #webview_flutter: ^4.8.0
-  win32: ^5.10.0  # 明示的にバージョンを指定
+  #win32: ^4.1.4  # 明示的にバージョンを指定
   flutter_svg: ^2.0.10
+  #ffi: ^2.1.3  # FFIサポート用
 
 dev_dependencies:
   flutter_test:

@@ -3,7 +3,8 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:sanchu5d/widgets/omikuji_result_screen.dart';
+import '../widgets/omikuji_bottom_sheet.dart';
+import '../widgets/omikuji_result_screen.dart';
 import '../manual_page.dart';
 import '../quiz/quiz_page_001.dart';
 import '../side_menu.dart';
@@ -14,6 +15,7 @@ import '../services/omikuji_service.dart';  // 追加
 import '../models/omikuji.dart';  // 追加
 import '../widgets/omikuji_result_screen.dart';
 import '../utils/fortune_level_utils.dart';
+import 'widgets/omikuji_bottom_sheet.dart';
 
 class InputPage extends StatefulWidget {
   const InputPage({
@@ -822,19 +824,15 @@ class _InputPageState extends State<InputPage> {
 
   // 画面下からおみくじの結果が出てくる
   void _showOmikuji(BuildContext context){
-    double w0 = MediaQuery.of(context).size.width;
-    double h0 = MediaQuery.of(context).size.height;
-    double h1 = h0 * 0.9;
-    showBottomSheet(
+    showModalBottomSheet(
         context: context,
+        isScrollControlled: true,
+        transitionAnimationController: AnimationController(
+          duration: const Duration(seconds: 1),
+            vsync: Navigator.of(context),
+        ),
         builder: (BuildContext context) {
-          return SizedBox(
-            width: w0,
-            height: h1,
-            child: Container(
-              color: Colors.amber,
-            ),
-          );
+          return const OmikujiBottomSheet();
         },
     );
   }
