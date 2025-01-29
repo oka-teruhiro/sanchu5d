@@ -14,6 +14,9 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
 
   late AnimationController _controller; // アニメーションのコントローラー
   late Animation<double> _animation; // アニメーションの値
+  late Animation<double> _slideAnimation; // スライドアップ用
+  late Animation<double> _fadeAnimation; // フェードイン用
+
 
   @override
   void initState() {
@@ -25,12 +28,26 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
       vsync: this,
     );
 
+    // スライドアップアニメーション(0-1秒)
+    _slideAnimation = CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.0, 0.5, curve: Curves.easeOut),
+    );
+
+    // フェードインアニメーション(1-2秒)
+    _fadeAnimation = CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.5, 1.0, curve: Curves.easeIn),
+    );
+
+    /*
     // アニメーションの設定
     _animation = CurvedAnimation(
         parent: _controller,
         curve: Curves.easeOut, // アニメーションの動き方
         //curve: Curves.elasticIn, // アニメーションの動き方
     );
+    */
 
     // アニメーション開始
     _controller.forward();
@@ -51,21 +68,21 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
     double h2 = h0 * 0.1;
 
 
-    return FadeTransition( // フェードインさせる
-      opacity: _animation,
-      child: SizeTransition( // サイズ変更アニメーション
-        sizeFactor: _animation,
-        axis: Axis.vertical,
-        child: SizedBox(
-          width: w0,
-          height: h1,
-          child: Container(
-            color: Colors.blueGrey,
+    return SizeTransition( // サイズ変更アニメーション
+      sizeFactor: _slideAnimation,
+      axis: Axis.vertical,
+      child: SizedBox(
+        width: w0,
+        height: h1,
+        child: Container(
+          color: Colors.blueGrey,
+          child: FadeTransition(
+            opacity: _fadeAnimation,
             child: SvgPicture.string(
               '''
       <svg width= w0 height= h1 viewBox="0 0 $w0 $h1">
-        
-        <path
+                  
+                  <path
             d="M 10 100
               L 10 50
               L 30 50
@@ -124,10 +141,10 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
             stroke-width="2"
             
             fill="none"
-          />
-
-      </svg>
-      ''',
+                    />
+                
+                </svg>
+                ''',
               width: w0,
               height: h1,
             ),
