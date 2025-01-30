@@ -93,12 +93,9 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.all(40),
-                      child: Text(
-                        'テスト表示', // 後でOmikujiContentWidgetに置き換え
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                        ),
+                      child: OmikujiContentWidget(
+                          omikuji: widget.omikuji,
+                          contentHeight: h1 - 80,
                       ),
                     ),
                   ),

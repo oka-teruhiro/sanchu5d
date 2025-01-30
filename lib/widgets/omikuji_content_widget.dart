@@ -94,12 +94,31 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
   Widget build(BuildContext context) {
     final content = List<String>.from(widget.omikuji['content']);
     final screenSize = MediaQuery.of(context).size;
-    final containerWidth = screenSize.width * 0.8; // 飾り枠内なので90%から80%に調整
-    final maxLength = content.fold<int>(
-        0, (maxLen, line) => line.length > maxLen ? line.length : maxLen);
 
-    final calculatedFontSize = (containerWidth / maxLength) * 0.93;
+    // 水平方向のパディングを変数化
+    final double hs = 5.0;  // この値を変更して調整
+
+    // パディングを含めた実際の利用可能幅を計算
+    final availableWidth = screenSize.width - (80 + (hs * 2));
+
+    //final containerWidth = screenSize.width * 0.8; // 飾り枠内なので90%から80%に調整
+    final maxLength = content.fold<int>(
+      0,
+      (maxLen, line) => line.length > maxLen ? line.length : maxLen,
+    );
+
+    // デバッグ用の出力
+    print('Screen width: ${screenSize.width}');
+    print('Available width: $availableWidth');
+    print('Max length: $maxLength');
+    print('Horizontal spacing: $hs');
+
+    final calculatedFontSize = (availableWidth / maxLength) * 0.93; // 係数を1.0に調整
     final baseFontSize = calculatedFontSize.clamp(14.0, 42.0);
+
+    // フォントサイズのデバッグ出力
+    print('Calculated font size: $calculatedFontSize');
+    print('Base font size: $baseFontSize');
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -114,46 +133,51 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
             constraints: BoxConstraints(
               minHeight: constraints.maxHeight,
             ),
-            child: Column(
-              mainAxisAlignment: totalLines < 10
-                  ? MainAxisAlignment.center
-                  : MainAxisAlignment.start,
-              children: [
-                ..._displayedContent.map((text) {
-                  if (text.isEmpty) {
-                    return SizedBox(height: baseFontSize * 1.5);
-                  }
-                  return Padding(
-                    padding: EdgeInsets.symmetric(
-                      vertical: baseFontSize * 0.4,
-                    ),
-                    child: Text(
-                      text,
-                      style: TextStyle(
-                        fontSize: baseFontSize,
-                        color: Colors.white,
-                        height: 1.5,
+            width: double.infinity, // 精一杯に広げる
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: hs), // 両端のスペース
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start, // 左揃え
+                mainAxisAlignment: totalLines < 10
+                    ? MainAxisAlignment.center
+                    : MainAxisAlignment.start,
+                children: [
+                  ..._displayedContent.map((text) {
+                    if (text.isEmpty) {
+                      return SizedBox(height: baseFontSize * 1.5);
+                    }
+                    return Padding(
+                      padding: EdgeInsets.symmetric(
+                        vertical: baseFontSize * 0.4,
                       ),
-                      textAlign: TextAlign.left,
-                    ),
-                  );
-                }),
-                if (_currentLine < content.length)
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      vertical: baseFontSize * 0.4,
-                    ),
-                    child: Text(
-                      _currentText,
-                      style: TextStyle(
-                        fontSize: baseFontSize,
-                        color: Colors.white,
-                        height: 1.5,
+                      child: Text(
+                        text,
+                        style: TextStyle(
+                          fontSize: baseFontSize,
+                          color: Colors.white,
+                          height: 1.5,
+                        ),
+                        textAlign: TextAlign.left,
                       ),
-                      textAlign: TextAlign.left,
+                    );
+                  }),
+                  if (_currentLine < content.length)
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        vertical: baseFontSize * 0.4,
+                      ),
+                      child: Text(
+                        _currentText,
+                        style: TextStyle(
+                          fontSize: baseFontSize,
+                          color: Colors.white,
+                          height: 1.5,
+                        ),
+                        textAlign: TextAlign.left,
+                      ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
           ),
         );
