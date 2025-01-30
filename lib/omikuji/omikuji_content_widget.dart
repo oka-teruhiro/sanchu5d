@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class OmikujiContentWidget extends StatefulWidget {
   final Map<String, dynamic> omikuji;
   final double contentHeight;
+  final bool canStartAnimation;  // アニメーション開始制御用のフラグを追加
 
   const OmikujiContentWidget({
     Key? key,
     required this.omikuji,
     required this.contentHeight,
+    required this.canStartAnimation,  // 新しいプロパティ
   }) : super(key: key);
 
   @override
@@ -22,8 +24,9 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
   int _currentLine = 0;
   int _currentChar = 0;
   bool _isAnimationComplete = false;
+  bool _hasStartedAnimation = false;  // アニメーション開始状態の追跡
 
-  @override
+  /*@override
   void initState() {
     super.initState();
     _startAnimation();
@@ -33,10 +36,20 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
   void dispose() {
     _scrollController.dispose();
     super.dispose();
+  }*/
+
+  @override
+  void didUpdateWidget(OmikujiContentWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // canStartAnimationがtrueになった時点でアニメーションを開始
+    if (widget.canStartAnimation && !_hasStartedAnimation) {
+      _hasStartedAnimation = true;
+      _startAnimation();
+    }
   }
 
   void _startAnimation() {
-    Future.delayed(const Duration(milliseconds: 1000), () {
+    Future.delayed(const Duration(milliseconds: 200), () {
       _animateText();
     });
   }
@@ -58,7 +71,7 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
         _currentLine++;
       });
 
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future.delayed(const Duration(milliseconds: 100));// Todo:
       if (_scrollController.hasClients) {
         await _scrollController.animateTo(
           _scrollController.position.maxScrollExtent,
@@ -67,7 +80,7 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
         );
       }
 
-      await Future.delayed(const Duration(milliseconds: 400));
+      await Future.delayed(const Duration(milliseconds: 100));
       _animateText();
       return;
     }
@@ -168,7 +181,7 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
                   padding:
                       EdgeInsets.only(left: 0, right: 0, top: verticalPadding),
                   child: Container(
-                    color: Colors.teal,
+                    color: Colors.black12,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

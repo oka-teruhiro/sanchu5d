@@ -3,13 +3,13 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../widgets/omikuji_bottom_sheet.dart';
+import 'omikuji/omikuji_bottom_sheet.dart';
 import '../quiz/quiz_page_001.dart';
 import '../side_menu.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'main.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // 追加
-import '../services/omikuji_service.dart'; // 追加
+import 'omikuji/omikuji_service.dart'; // 追加
 
 class InputPage extends StatefulWidget {
   const InputPage({

@@ -22,6 +22,8 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
   late AnimationController _controller; // アニメーションのコントローラー
   late Animation<double> _slideAnimation; // スライドアップ用
   late Animation<double> _pathAnimation; // パス描画用
+  bool _canStartTextAnimation = false;  // テキストアニメーション開始フラグ
+
 
   @override
   void initState() {
@@ -29,7 +31,7 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
 
     // コントローラーの設定
     _controller = AnimationController(
-      duration: const Duration(seconds: 5), // アニメーションの長さ
+      duration: const Duration(seconds: 4), // アニメーションの長さ
       vsync: this,
     );
 
@@ -45,8 +47,16 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
       end: 1.0,
     ).animate(CurvedAnimation(
       parent: _controller,
-      curve: const Interval(0.2, 1.0, curve: Curves.linear),
+      curve: const Interval(0.2, 0.95, curve: Curves.linear),
     ));
+
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        setState(() {
+          _canStartTextAnimation = true;
+        });
+      }
+    });
 
     // アニメーション開始
     _controller.forward();
@@ -95,6 +105,7 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
                       child: OmikujiContentWidget(
                         omikuji: widget.omikuji,
                         contentHeight: h0 - 80,
+                        canStartAnimation: _canStartTextAnimation,  // フラグを渡す
                       ),
                     ),
                   ),
