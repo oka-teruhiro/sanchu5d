@@ -95,35 +95,52 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
     final content = List<String>.from(widget.omikuji['content']);
     final screenSize = MediaQuery.of(context).size;
 
-    // 水平方向のパディングを変数化
-    final double hs = 5.0;  // この値を変更して調整
+    // 水平方向のパディングと行間係数を変数化
+    final double hs = 5.0;  // 水平方向の余白（調整用）
+    final double gk = 1.0;  // 行間係数（調整用）：フォントサイズの何倍にするか
 
-    // パディングを含めた実際の利用可能幅を計算
+    // 利用可能な幅と高さを計算
     final availableWidth = screenSize.width - (80 + (hs * 2));
+    final availableHeight = widget.contentHeight - 80;  // 上下のパディングを考慮
 
-    //final containerWidth = screenSize.width * 0.8; // 飾り枠内なので90%から80%に調整
+    // 最大文字数を取得
     final maxLength = content.fold<int>(
       0,
       (maxLen, line) => line.length > maxLen ? line.length : maxLen,
     );
 
-    // デバッグ用の出力
-    print('Screen width: ${screenSize.width}');
-    print('Available width: $availableWidth');
-    print('Max length: $maxLength');
-    print('Horizontal spacing: $hs');
-
+    // フォントサイズを計算
     final calculatedFontSize = (availableWidth / maxLength) * 0.93; // 係数を1.0に調整
     final baseFontSize = calculatedFontSize.clamp(14.0, 42.0);
 
-    // フォントサイズのデバッグ出力
-    print('Calculated font size: $calculatedFontSize');
-    print('Base font size: $baseFontSize');
+    // 1行の高さを計算（フォントサイズ + 行間）
+    final lineHeight = baseFontSize * (1 + gk);
+
+    // 最大表示可能行数を計算
+    final maxVisibleLines = (availableHeight / lineHeight).floor();
+
+    // 全行数
+    final totalLines = content.length;
+
+    // 上下の余白を計算
+    final double verticalPadding = totalLines <= maxVisibleLines
+        ? (availableHeight - (totalLines * lineHeight)) / 2  // 中央寄せの場合の余白
+        : 0;  // スクロールが必要な場合は余白なし
+
+    // デバッグ出力
+    print('Screen width: ${screenSize.width}');
+    print('Available width: $availableWidth');
+    print('Available height: $availableHeight');
+    print('Max length: $maxLength');
+    print('Font size: $baseFontSize');
+    print('Line height: $lineHeight');
+    print('Max visible lines: $maxVisibleLines');
+    print('Total lines: $totalLines');
+    print('Vertical padding: $verticalPadding');
+
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final totalLines = content.length;
-
         return SingleChildScrollView(
           controller: _scrollController,
           physics: _isAnimationComplete
@@ -134,50 +151,43 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
               minHeight: constraints.maxHeight,
             ),
             width: double.infinity, // 精一杯に広げる
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: hs), // 両端のスペース
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start, // 左揃え
-                mainAxisAlignment: totalLines < 10
-                    ? MainAxisAlignment.center
-                    : MainAxisAlignment.start,
-                children: [
-                  ..._displayedContent.map((text) {
-                    if (text.isEmpty) {
-                      return SizedBox(height: baseFontSize * 1.5);
-                    }
-                    return Padding(
-                      padding: EdgeInsets.symmetric(
-                        vertical: baseFontSize * 0.4,
-                      ),
-                      child: Text(
-                        text,
-                        style: TextStyle(
-                          fontSize: baseFontSize,
-                          color: Colors.white,
-                          height: 1.5,
+            child: Column(
+              children: [
+                SizedBox(height: verticalPadding), // 上部の空白
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: hs),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ..._displayedContent.map((text) {
+                        if (text.isEmpty) {
+                          return SizedBox(height: lineHeight);
+                        }
+                        return Text(
+                          text,
+                          style: TextStyle(
+                            fontSize: baseFontSize,
+                            color: Colors.white,
+                            height: 1 + gk,
+                          ),
+                          textAlign: TextAlign.left,
+                        );
+                      }),
+                      if (_currentLine < content.length)
+                        Text(
+                          _currentText,
+                          style: TextStyle(
+                            fontSize: baseFontSize,
+                            color: Colors.white,
+                            height: 1 + gk,
+                          ),
+                          textAlign: TextAlign.left,
                         ),
-                        textAlign: TextAlign.left,
-                      ),
-                    );
-                  }),
-                  if (_currentLine < content.length)
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        vertical: baseFontSize * 0.4,
-                      ),
-                      child: Text(
-                        _currentText,
-                        style: TextStyle(
-                          fontSize: baseFontSize,
-                          color: Colors.white,
-                          height: 1.5,
-                        ),
-                        textAlign: TextAlign.left,
-                      ),
-                    ),
-                ],
-              ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: verticalPadding),
+              ],
             ),
           ),
         );
