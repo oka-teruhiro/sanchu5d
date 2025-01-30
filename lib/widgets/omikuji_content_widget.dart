@@ -96,12 +96,13 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
     final screenSize = MediaQuery.of(context).size;
 
     // 水平方向のパディングと行間係数を変数化
-    final double hs = 5.0;  // 水平方向の余白（調整用）
-    final double gk = 1.0;  // 行間係数（調整用）：フォントサイズの何倍にするか
+    final double hs = 0; // 水平方向の余白（調整用）
+    final double gk = 1.0; // 行間係数（調整用）：フォントサイズの何倍にするか
+    final double lk = 18.0;  // 左余白（固定値）
 
     // 利用可能な幅と高さを計算
-    final availableWidth = screenSize.width - (80 + (hs * 2));
-    final availableHeight = widget.contentHeight - 80;  // 上下のパディングを考慮
+    final availableWidth = screenSize.width - (70 + lk * 2);
+    final availableHeight = widget.contentHeight - 180; // 上下のパディングを考慮
 
     // 最大文字数を取得
     final maxLength = content.fold<int>(
@@ -110,8 +111,8 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
     );
 
     // フォントサイズを計算
-    final calculatedFontSize = (availableWidth / maxLength) * 0.93; // 係数を1.0に調整
-    final baseFontSize = calculatedFontSize.clamp(14.0, 42.0);
+    final calculatedFontSize = (availableWidth / maxLength) * 1.0; // 係数を1.0に調整
+    final baseFontSize = calculatedFontSize.clamp(14.0, 60.0);
 
     // 1行の高さを計算（フォントサイズ + 行間）
     final lineHeight = baseFontSize * (1 + gk);
@@ -124,8 +125,8 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
 
     // 上下の余白を計算
     final double verticalPadding = totalLines <= maxVisibleLines
-        ? (availableHeight - (totalLines * lineHeight)) / 2  // 中央寄せの場合の余白
-        : 0;  // スクロールが必要な場合は余白なし
+        ? (availableHeight - (totalLines * lineHeight)) / 2 // 中央寄せの場合の余白
+        : 0; // スクロールが必要な場合は余白なし
 
     // デバッグ出力
     print('Screen width: ${screenSize.width}');
@@ -138,9 +139,9 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
     print('Total lines: $totalLines');
     print('Vertical padding: $verticalPadding');
 
-
     return LayoutBuilder(
       builder: (context, constraints) {
+        final totalLines = content.length;
         return SingleChildScrollView(
           controller: _scrollController,
           physics: _isAnimationComplete
@@ -151,39 +152,58 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
               minHeight: constraints.maxHeight,
             ),
             width: double.infinity, // 精一杯に広げる
-            child: Column(
+            child: Stack(  // Stackを使用して左余白を固定
               children: [
-                SizedBox(height: verticalPadding), // 上部の空白
+                Positioned(  // 左余白用のスペース
+                  left: 0,
+                  top: 0,
+                  bottom: 0,
+                  width: 0,
+                  child: Container(
+                    color: Colors.red,
+                  ),
+                ),
+                //SizedBox(height: verticalPadding), // todo:上部の空白
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: hs),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ..._displayedContent.map((text) {
-                        if (text.isEmpty) {
-                          return SizedBox(height: lineHeight);
-                        }
-                        return Text(
-                          text,
-                          style: TextStyle(
-                            fontSize: baseFontSize,
-                            color: Colors.white,
-                            height: 1 + gk,
+                  padding: EdgeInsets.only(
+                    left: 0,
+                    right:0,
+                    top: verticalPadding
+                  ),
+                  child: Container(
+                    color: Colors.teal,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ..._displayedContent.map((text) {
+                          if (text.isEmpty) {
+                            return SizedBox(height: lineHeight);
+                          }
+                          return Text(
+                            text,
+                            style: TextStyle(
+                              fontSize: baseFontSize,
+                              color: Colors.white,
+                              height: 1 + gk,
+                            ),
+                            textAlign: TextAlign.left,
+                          );
+                        }),
+                        if (_currentLine < content.length)
+                          Container(
+                            alignment: Alignment.centerLeft,  // 左揃えを強制
+                            child: Text(
+                              _currentText,
+                              style: TextStyle(
+                                fontSize: baseFontSize,
+                                color: Colors.white,
+                                height: 1 + gk,
+                              ),
+                              //textAlign: TextAlign.left,
+                            ),
                           ),
-                          textAlign: TextAlign.left,
-                        );
-                      }),
-                      if (_currentLine < content.length)
-                        Text(
-                          _currentText,
-                          style: TextStyle(
-                            fontSize: baseFontSize,
-                            color: Colors.white,
-                            height: 1 + gk,
-                          ),
-                          textAlign: TextAlign.left,
-                        ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
                 SizedBox(height: verticalPadding),
