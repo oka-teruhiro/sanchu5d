@@ -3,10 +3,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-//import 'package:win32/win32.dart';
 import 'dart:math' show pi;
 import '../models/omikuji.dart';              // 追加
-import '../utils/fortune_level_utils.dart';    // 追加
 
 
 

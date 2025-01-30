@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
       title: '天運三柱推命',
       theme: ThemeData.dark(),
       home: const MyHomePage(
-        apptitle:'天運三柱推命 ver6.3.4', // Todo: 修正したらバージョンをあげる
+        apptitle:'天運三柱推命 ver6.3.5', // Todo: 修正したらバージョンをあげる
         seinenInt: 2000, // 6.1.2
         seigatuInt: 1, // 6.1.2
         seinitiInt: 1, // 6.1.2

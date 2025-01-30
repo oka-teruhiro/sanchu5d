@@ -1,11 +1,15 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'omikuji_content_widget.dart';
 
 // 画面下からおみくじの結果が出てくる
 class OmikujiBottomSheet extends StatefulWidget {
-  const OmikujiBottomSheet({Key? key}) : super(key: key);
+  final Map<String, dynamic> omikuji;
+
+  const OmikujiBottomSheet({
+    Key? key,
+    required this.omikuji,
+  }) : super(key: key);
 
   @override
   State<OmikujiBottomSheet> createState() => _OmikujiBottomSheetState();
@@ -16,9 +20,7 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
   // アニメーションに必要なミックスイン
 
   late AnimationController _controller; // アニメーションのコントローラー
-  //late Animation<double> _animation; // アニメーションの値
   late Animation<double> _slideAnimation; // スライドアップ用
-  //late Animation<double> _fadeAnimation; // フェードイン用
   late Animation<double> _pathAnimation; // パス描画用
 
   @override
@@ -37,31 +39,14 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
       curve: const Interval(0.0, 0.2, curve: Curves.easeOut), // 最初の30%
     );
 
-    /*
-    // フェードインアニメーション(1-2秒)
-    _fadeAnimation = CurvedAnimation(
-      parent: _controller,
-      curve: const Interval(0.3, 1.0, curve: Curves.easeIn),
-    );
-    */
-
     // 一筆書きアニメーション(1秒-3秒)
     _pathAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
     ).animate(CurvedAnimation(
-        parent: _controller,
-        curve:const Interval(0.2, 1.0, curve: Curves.linear),
+      parent: _controller,
+      curve: const Interval(0.2, 1.0, curve: Curves.linear),
     ));
-
-    /*
-    // アニメーションの設定
-    _animation = CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeOut, // アニメーションの動き方
-        //curve: Curves.elasticIn, // アニメーションの動き方
-    );
-    */
 
     // アニメーション開始
     _controller.forward();
@@ -80,10 +65,6 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
     double h1 = h0 * 0.9;
     double h2 = h0 * 0.1;
 
-    // パスのおおよその全長を計算（実際のパスに合わせて調整が必要）
-    //double pathLength = (w0 *2 + h1 * 2) *2;  // 外周の2倍程度を目安に
-    double pathLength = 2700;  // 実際のパスの長さより大きめの値を設定
-
     return SizeTransition(
       // サイズ変更アニメーション
       sizeFactor: _slideAnimation,
@@ -92,15 +73,62 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
         width: w0,
         height: h1,
         child: Container(
-          color: Colors.blueGrey,
-          child: AnimatedBuilder(
-              animation: _pathAnimation,
-              builder: (context, child) {
-                return CustomPaint(
-                  painter: BorderPainter(_pathAnimation.value),
-                  size: Size(w0, h1),
-                );
-              },
+          color: Colors.black12,
+          child: Stack(
+            children: [
+              // 飾り枠のレイヤー
+              AnimatedBuilder(
+                animation: _pathAnimation,
+                builder: (context, child) {
+                  return CustomPaint(
+                    painter: BorderPainter(_pathAnimation.value),
+                    size: Size(w0, h1),
+                  );
+                },
+              ),
+
+              // メインコンテンツ領域
+              Column(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(40),
+                      child: Text(
+                        'テスト表示', // 後でOmikujiContentWidgetに置き換え
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                        ),
+                      ),
+                    ),
+                  ),
+                  // 戻るボタン
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Center(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.tealAccent,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 30,
+                            vertical: 8,
+                          ),
+                        ),
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text(
+                          '戻る',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
@@ -112,10 +140,11 @@ class BorderPainter extends CustomPainter {
   final double progress;
   final Paint _paint;
 
-  BorderPainter(this.progress) : _paint = Paint()
-    ..color = const Color(0xFF64FFDA)
-    ..strokeWidth = 2
-    ..style = PaintingStyle.stroke;
+  BorderPainter(this.progress)
+      : _paint = Paint()
+          ..color = const Color(0xFF64FFDA)
+          ..strokeWidth = 2
+          ..style = PaintingStyle.stroke;
 
   @override
   void paint(Canvas canvas, Size size) {

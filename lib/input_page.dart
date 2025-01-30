@@ -5,17 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../widgets/omikuji_bottom_sheet.dart';
 import '../widgets/omikuji_result_screen.dart';
-import '../manual_page.dart';
 import '../quiz/quiz_page_001.dart';
 import '../side_menu.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'main.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';  // 追加
-import '../services/omikuji_service.dart';  // 追加
-import '../models/omikuji.dart';  // 追加
-import '../widgets/omikuji_result_screen.dart';
-import '../utils/fortune_level_utils.dart';
-import 'widgets/omikuji_bottom_sheet.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // 追加
+import '../services/omikuji_service.dart'; // 追加
+import '../models/omikuji.dart'; // 追加
 
 class InputPage extends StatefulWidget {
   const InputPage({
@@ -30,8 +26,6 @@ class InputPage extends StatefulWidget {
 }
 
 class _InputPageState extends State<InputPage> {
-
-
   // 鑑定ボタンの色
   List<int> color1 = [
     0xFF000000,
@@ -208,25 +202,25 @@ class _InputPageState extends State<InputPage> {
   }
 
   // おみくじ取得関数 v.6.2.2
-  Future<void> _drawOmikuji()  async {
+  Future<void> _drawOmikuji() async {
     try {
       // ローディング表示
       showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            return const Center(
-              child: CircularProgressIndicator(
-                color: Colors.tealAccent,
-              ),
-            );
-          },
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return const Center(
+            child: CircularProgressIndicator(
+              color: Colors.tealAccent,
+            ),
+          );
+        },
       );
 
       // データー取得
       final snapshot = await FirebaseFirestore.instance
           .collection('omikuji')
-          .where('isActive', isEqualTo: true ) // アクティブなおみくじのみ
+          .where('isActive', isEqualTo: true) // アクティブなおみくじのみ
           .get();
 
       // ローディング終了
@@ -237,7 +231,7 @@ class _InputPageState extends State<InputPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-                content: Text('おみくじがありません'),
+              content: Text('おみくじがありません'),
               backgroundColor: Colors.red,
             ),
           );
@@ -248,9 +242,7 @@ class _InputPageState extends State<InputPage> {
       // ランダムにおみくじを１つ選択
       final random = Random();
       final randomDoc = snapshot.docs[random.nextInt(snapshot.docs.length)];
-      final omikuji = Omikuji.fromMap(randomDoc.id, randomDoc.data() );
-
-
+      final omikuji = Omikuji.fromMap(randomDoc.id, randomDoc.data());
 
       /*
       // おみくじ結果を表示
@@ -311,7 +303,8 @@ class _InputPageState extends State<InputPage> {
           PageRouteBuilder(
             pageBuilder: (context, animation, secondaryAnimation) =>
                 OmikujiResultScreen(omikuji: omikuji),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
               const begin = Offset(0.0, 1.0);
               const end = Offset.zero;
               const curve = Curves.easeOutQuart;
@@ -331,7 +324,6 @@ class _InputPageState extends State<InputPage> {
         // 選択回数を更新
         await _omikujiService.incrementSelectedCount(omikuji.id);
       }
-
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -344,31 +336,9 @@ class _InputPageState extends State<InputPage> {
     }
   }
 
-  // 運勢レベルのテキスト取得関数を追加
-  String _getFortuneLevelText(int level) {
-    switch (level) {
-      case 7:
-        return '大吉';
-      case 6:
-        return '中吉';
-      case 5:
-        return '小吉';
-      case 4:
-        return '平';
-      case 3:
-        return '小凶';
-      case 2:
-        return '中凶';
-      case 1:
-        return '大凶';
-      default:
-        return '平';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-     var drawer = Drawer(
+    var drawer = Drawer(
       child: SideMenu(
         apptitle: widget.apptitle, // todo 6.1.35
       ),
@@ -531,14 +501,17 @@ class _InputPageState extends State<InputPage> {
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) =>
-                                              MyHomePage(
-                                                  currentIndex: 1,
-                                                apptitle: widget.apptitle, // todo
-                                                seinenInt: seiNen,   // 6.1.2
-                                                seigatuInt: seiGatu, // 6.1.2
-                                                seinitiInt: seiNiti, // 6.1.2
-                                                aiteInt: index,  //6.1.16
+                                          builder: (context) => MyHomePage(
+                                                currentIndex: 1,
+                                                apptitle: widget.apptitle,
+                                                // todo
+                                                seinenInt: seiNen,
+                                                // 6.1.2
+                                                seigatuInt: seiGatu,
+                                                // 6.1.2
+                                                seinitiInt: seiNiti,
+                                                // 6.1.2
+                                                aiteInt: index, //6.1.16
                                               )),
                                     );
                                   }
@@ -688,7 +661,7 @@ class _InputPageState extends State<InputPage> {
                                     return AlertDialog(
                                       backgroundColor: Colors.blue,
                                       content: Text(
-                                          '$_birthday を削除しますか？',
+                                        '$_birthday を削除しますか？',
                                         style: const TextStyle(
                                           fontSize: 16,
                                           color: Colors.white,
@@ -759,14 +732,11 @@ class _InputPageState extends State<InputPage> {
                                 builder: (BuildContext context) {
                                   // 登録　ダイアログを表示する
                                   return AlertDialog(
-
                                     backgroundColor: Colors.blue,
                                     content: Text(
-                                        '$_birthday で登録しますか？',
+                                      '$_birthday で登録しますか？',
                                       style: const TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.white
-                                      ),
+                                          fontSize: 16, color: Colors.white),
                                     ),
                                     actions: <Widget>[
                                       //「Cancel」ボタン
@@ -823,17 +793,77 @@ class _InputPageState extends State<InputPage> {
   }
 
   // 画面下からおみくじの結果が出てくる
-  void _showOmikuji(BuildContext context){
-    showModalBottomSheet(
+  void _showOmikuji(BuildContext context) async {
+    try {
+      // ローディング表示
+      showDialog(
         context: context,
-        isScrollControlled: true,
-        transitionAnimationController: AnimationController(
-          duration: const Duration(seconds: 1),
-            vsync: Navigator.of(context),
-        ),
+        barrierDismissible: false,
         builder: (BuildContext context) {
-          return const OmikujiBottomSheet();
+          return const Center(
+            child: CircularProgressIndicator(
+              color: Colors.tealAccent,
+            ),
+          );
         },
-    );
+      );
+
+      // データ取得
+      final snapshot = await FirebaseFirestore.instance
+          .collection('omikuji')
+          .where('isActive', isEqualTo: true)
+          .get();
+
+      // ローディング終了
+      if (mounted) Navigator.pop(context);
+
+      // データ件数確認
+      if (snapshot.docs.isEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('おみくじがありません'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        return;
+      }
+
+      // ランダムにおみくじを1つ選択
+      final random = Random();
+      final randomDoc = snapshot.docs[random.nextInt(snapshot.docs.length)];
+      final omikuji = randomDoc.data();
+
+      // おみくじ表示
+      if (mounted) {
+        // おみくじ表示
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          transitionAnimationController: AnimationController(
+            duration: const Duration(seconds: 1),
+            vsync: Navigator.of(context),
+          ),
+          builder: (BuildContext context) {
+            return OmikujiBottomSheet(
+              omikuji: omikuji,
+            );
+          },
+        );
+
+        // 選択回数を更新
+        await _omikujiService.incrementSelectedCount(randomDoc.id);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('エラーが発生しました: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 }
