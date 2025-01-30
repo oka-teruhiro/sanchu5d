@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import '../meisiki_page.dart';
+
 //import '../page_g.dart';
 import '../seikaku_page.dart';
 import '../tenun_page.dart';
@@ -11,7 +12,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();  // 追加
+  WidgetsFlutterBinding.ensureInitialized(); // 追加
 
   try {
     // Firebase初期化を追加
@@ -46,10 +47,14 @@ class MyApp extends StatelessWidget {
       title: '天運三柱推命',
       theme: ThemeData.dark(),
       home: const MyHomePage(
-        apptitle:'天運三柱推命 ver6.3.9', // Todo: 修正したらバージョンをあげる
-        seinenInt: 2000, // 6.1.2
-        seigatuInt: 1, // 6.1.2
-        seinitiInt: 1, // 6.1.2
+        apptitle: '天運三柱推命 ver6.3.10',
+        // Todo: 修正したらバージョンをあげる
+        seinenInt: 2000,
+        // 6.1.2
+        seigatuInt: 1,
+        // 6.1.2
+        seinitiInt: 1,
+        // 6.1.2
         aiteInt: 0, //6.1.16
       ),
     );
@@ -62,7 +67,7 @@ class MyHomePage extends StatefulWidget {
   final int seinenInt; // 6.1.2
   final int seigatuInt; // 6.1.2
   final int seinitiInt; // 6.1.2
-  final int aiteInt;   // 6.1.16
+  final int aiteInt; // 6.1.16
 
   const MyHomePage({
     super.key,
@@ -71,7 +76,7 @@ class MyHomePage extends StatefulWidget {
     required this.seinenInt, // 6.1.2
     required this.seigatuInt, // 6.1.2
     required this.seinitiInt, // 6.1.2
-    required this.aiteInt,    // 6.1.16
+    required this.aiteInt, // 6.1.16
   }); // currentIndexを追加
 
   @override
@@ -83,7 +88,7 @@ class MyHomePageState extends State<MyHomePage> {
   late int _seinenInt; // 6.1.2
   late int _seigatuInt; // 6.1.2
   late int _seinitiInt; // 6.1.2
-  late int _aiteInt;   // 6.1.16
+  late int _aiteInt; // 6.1.16
 
   @override
   void initState() {
@@ -92,7 +97,7 @@ class MyHomePageState extends State<MyHomePage> {
     _seinenInt = widget.seinenInt; // 6.1.2
     _seigatuInt = widget.seigatuInt; // 6.1.2
     _seinitiInt = widget.seinitiInt; // 6.1.2
-    _aiteInt = widget.aiteInt;   // 6.1.16
+    _aiteInt = widget.aiteInt; // 6.1.16
   }
 
   void onTabTapped(int index) {
@@ -111,13 +116,13 @@ class MyHomePageState extends State<MyHomePage> {
         seinenInt: _seinenInt, // 6.1.2
         seigatuInt: _seigatuInt, // 6.1.2
         seinitiInt: _seinitiInt, // 6.1.2
-        aiteInt: _aiteInt,     // 6.1.16
+        aiteInt: _aiteInt, // 6.1.16
       ),
       SeikakuPage(
         seinenInt: _seinenInt, // 6.1.15
         seigatuInt: _seigatuInt, // 6.1.15
         seinitiInt: _seinitiInt, // 6.1.15
-        aiteInt: _aiteInt,     // 6.1.16
+        aiteInt: _aiteInt, // 6.1.16
       ),
       TenunPage(
         seinen: _seinenInt, // 6.1.12

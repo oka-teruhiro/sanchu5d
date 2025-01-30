@@ -96,9 +96,8 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
     final screenSize = MediaQuery.of(context).size;
 
     // 水平方向のパディングと行間係数を変数化
-    final double hs = 0; // 水平方向の余白（調整用）
     final double gk = 1.0; // 行間係数（調整用）：フォントサイズの何倍にするか
-    final double lk = 18.0;  // 左余白（固定値）
+    final double lk = 18.0; // 左余白（固定値）
 
     // 利用可能な幅と高さを計算
     final availableWidth = screenSize.width - (70 + lk * 2);
@@ -128,20 +127,20 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
         ? (availableHeight - (totalLines * lineHeight)) / 2 // 中央寄せの場合の余白
         : 0; // スクロールが必要な場合は余白なし
 
-    // デバッグ出力
+    /*// デバッグ出力
     print('Screen width: ${screenSize.width}');
     print('Available width: $availableWidth');
+    print('Available height: $availableHeight');
     print('Available height: $availableHeight');
     print('Max length: $maxLength');
     print('Font size: $baseFontSize');
     print('Line height: $lineHeight');
     print('Max visible lines: $maxVisibleLines');
     print('Total lines: $totalLines');
-    print('Vertical padding: $verticalPadding');
+    print('Vertical padding: $verticalPadding');*/
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final totalLines = content.length;
         return SingleChildScrollView(
           controller: _scrollController,
           physics: _isAnimationComplete
@@ -152,9 +151,11 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
               minHeight: constraints.maxHeight,
             ),
             width: double.infinity, // 精一杯に広げる
-            child: Stack(  // Stackを使用して左余白を固定
+            child: Stack(
+              // Stackを使用して左余白を固定
               children: [
-                Positioned(  // 左余白用のスペース
+                Positioned(
+                  // 左余白用のスペース
                   left: 0,
                   top: 0,
                   bottom: 0,
@@ -163,13 +164,9 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
                     color: Colors.red,
                   ),
                 ),
-                //SizedBox(height: verticalPadding), // todo:上部の空白
                 Padding(
-                  padding: EdgeInsets.only(
-                    left: 0,
-                    right:0,
-                    top: verticalPadding
-                  ),
+                  padding:
+                      EdgeInsets.only(left: 0, right: 0, top: verticalPadding),
                   child: Container(
                     color: Colors.teal,
                     child: Column(
@@ -191,7 +188,7 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
                         }),
                         if (_currentLine < content.length)
                           Container(
-                            alignment: Alignment.centerLeft,  // 左揃えを強制
+                            alignment: Alignment.centerLeft, // 左揃えを強制
                             child: Text(
                               _currentText,
                               style: TextStyle(

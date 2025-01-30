@@ -4,14 +4,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../widgets/omikuji_bottom_sheet.dart';
-import '../widgets/omikuji_result_screen.dart';
 import '../quiz/quiz_page_001.dart';
 import '../side_menu.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'main.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // 追加
 import '../services/omikuji_service.dart'; // 追加
-import '../models/omikuji.dart'; // 追加
 
 class InputPage extends StatefulWidget {
   const InputPage({
@@ -201,141 +199,6 @@ class _InputPageState extends State<InputPage> {
     } else {}
   }
 
-  // おみくじ取得関数 v.6.2.2
-  Future<void> _drawOmikuji() async {
-    try {
-      // ローディング表示
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return const Center(
-            child: CircularProgressIndicator(
-              color: Colors.tealAccent,
-            ),
-          );
-        },
-      );
-
-      // データー取得
-      final snapshot = await FirebaseFirestore.instance
-          .collection('omikuji')
-          .where('isActive', isEqualTo: true) // アクティブなおみくじのみ
-          .get();
-
-      // ローディング終了
-      if (mounted) Navigator.pop(context);
-
-      // データー件数確認
-      if (snapshot.docs.isEmpty) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('おみくじがありません'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-        return;
-      }
-
-      // ランダムにおみくじを１つ選択
-      final random = Random();
-      final randomDoc = snapshot.docs[random.nextInt(snapshot.docs.length)];
-      final omikuji = Omikuji.fromMap(randomDoc.id, randomDoc.data());
-
-      /*
-      // おみくじ結果を表示
-      if (mounted) {
-        await showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              backgroundColor: Colors.grey[900],
-              title: Text(
-                _getFortuneLevelText(omikuji.fortuneLevel),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ...omikuji.content.map((line) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      child: Text(
-                        line,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                        textAlign: TextAlign.left,
-                      ),
-                    )),
-                  ],
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text(
-                    '閉じる',
-                    style: TextStyle(
-                      color: Colors.tealAccent,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
-        );
-        */
-      // おみくじ結果画面に遷移
-      if (mounted) {
-        await Navigator.push(
-          context,
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) =>
-                OmikujiResultScreen(omikuji: omikuji),
-            transitionsBuilder:
-                (context, animation, secondaryAnimation, child) {
-              const begin = Offset(0.0, 1.0);
-              const end = Offset.zero;
-              const curve = Curves.easeOutQuart;
-              var tween = Tween(begin: begin, end: end).chain(
-                CurveTween(curve: curve),
-              );
-              var offsetAnimation = animation.drive(tween);
-              return SlideTransition(
-                position: offsetAnimation,
-                child: child,
-              );
-            },
-            transitionDuration: const Duration(milliseconds: 800),
-          ),
-        );
-
-        // 選択回数を更新
-        await _omikujiService.incrementSelectedCount(omikuji.id);
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('エラーが発生しました: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     var drawer = Drawer(
@@ -388,7 +251,6 @@ class _InputPageState extends State<InputPage> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  //onPressed: _drawOmikuji,
                   onPressed: () {
                     _showOmikuji(context);
                     setState(() {});
@@ -652,7 +514,6 @@ class _InputPageState extends State<InputPage> {
                               _birthday = _birthO[i];
                               if (_birthday == '生年月日') {
                               } else {
-                                //var result =
                                 await showDialog<int>(
                                   context: context,
                                   barrierDismissible: false,

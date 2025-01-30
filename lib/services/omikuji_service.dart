@@ -91,10 +91,10 @@ class OmikujiService {
   }
 
   // おみくじの選択回数を増やす
-Future<void> incrementSelectedCount(String id) async {
-  await _firestore.collection(_collection).doc(id).update({
-    'selectedCount': FieldValue.increment(1),
-    'updatedAt': DateTime.now(),
-  });
-}
+  Future<void> incrementSelectedCount(String id) async {
+    await _firestore.collection(_collection).doc(id).update({
+      'selectedCount': FieldValue.increment(1),
+      'updatedAt': DateTime.now(),
+    });
+  }
 }

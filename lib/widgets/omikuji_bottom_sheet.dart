@@ -63,7 +63,6 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
     double w0 = MediaQuery.of(context).size.width;
     double h0 = MediaQuery.of(context).size.height;
     double h1 = h0 * 0.9;
-    double h2 = h0 * 0.1;
 
     return SizeTransition(
       // サイズ変更アニメーション
@@ -94,8 +93,8 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
                     child: Padding(
                       padding: const EdgeInsets.all(40),
                       child: OmikujiContentWidget(
-                          omikuji: widget.omikuji,
-                          contentHeight: h1 - 80,
+                        omikuji: widget.omikuji,
+                        contentHeight: h0 - 80,
                       ),
                     ),
                   ),
