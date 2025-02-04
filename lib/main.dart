@@ -32,6 +32,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      // テキストスケーリングを制御するbuilderを追加
+      builder: (context, child) {
+        return MediaQuery(
+          // システムの文字サイズ設定を無視するように設定
+          data: MediaQuery.of(context).copyWith(
+            textScaler: const TextScaler.linear(1.0),
+          ),
+          child: child ?? const SizedBox.shrink(),
+        );
+      },
       // DatePickerを日本語化する
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
@@ -47,7 +57,7 @@ class MyApp extends StatelessWidget {
       title: '天運三柱推命',
       theme: ThemeData.dark(),
       home: const MyHomePage(
-        apptitle: '天運三柱推命 ver6.3.11',
+        apptitle: '天運三柱推命 ver6.3.13',
         // Todo: 修正したらバージョンをあげる
         seinenInt: 2000,
         // 6.1.2

@@ -244,7 +244,7 @@ class _InputPageState extends State<InputPage> {
                         WidgetStateProperty.all<Color>(Colors.black),
                   ),
                   child: const Text(
-                    'おみくじを引く',
+                    'おみくじを引く（工事中）',
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.black,
