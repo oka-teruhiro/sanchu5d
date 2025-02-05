@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:io' show Platform;
 
 class OmikujiContentWidget extends StatefulWidget {
   final Map<String, dynamic> omikuji;
   final double contentHeight;
-  final bool canStartAnimation;  // アニメーション開始制御用のフラグを追加
+  final double contentWidth;
+  final bool canStartAnimation; // アニメーション開始制御用のフラグを追加
 
   const OmikujiContentWidget({
     Key? key,
     required this.omikuji,
     required this.contentHeight,
-    required this.canStartAnimation,  // 新しいプロパティ
+    required this.contentWidth,
+    required this.canStartAnimation, // 新しいプロパティ
   }) : super(key: key);
 
   @override
@@ -24,7 +28,9 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
   int _currentLine = 0;
   int _currentChar = 0;
   bool _isAnimationComplete = false;
-  bool _hasStartedAnimation = false;  // アニメーション開始状態の追跡
+  bool _hasStartedAnimation = false; // アニメーション開始状態の追跡
+
+  //final content = List<String>.from(widgetFactory.omikuji['content']);
 
   /*@override
   void initState() {
@@ -71,7 +77,7 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
         _currentLine++;
       });
 
-      await Future.delayed(const Duration(milliseconds: 100));// Todo:
+      await Future.delayed(const Duration(milliseconds: 100)); // Todo:
       if (_scrollController.hasClients) {
         await _scrollController.animateTo(
           _scrollController.position.maxScrollExtent,
@@ -109,22 +115,32 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
     final screenSize = MediaQuery.of(context).size;
 
     // 水平方向のパディングと行間係数を変数化
-    final double gk = 1.0; // 行間係数（調整用）：フォントサイズの何倍にするか
-    final double lk = 18.0; // 左余白（固定値）
+    final double gk = 1.0; // 行間係数（要調整）：フォントサイズの何倍にするか
+    final double mk = 0.1; // 文字間係数（要調整): フォントサイズの何倍にすうか
+    final double webk;
+    if (kIsWeb) {
+      webk = 20; // web用　有効幅をこの数引いて計算する
+    } else {
+      webk = 0; // Android用
+    }
 
     // 利用可能な幅と高さを計算
-    final availableWidth = screenSize.width - (70 + lk * 2);
-    final availableHeight = widget.contentHeight - 180; // 上下のパディングを考慮
+    //final availableWidth = screenSize.width - (70 + lk * 2);
+    final availableWidth = widget.contentWidth - webk;
+    //final availableHeight = widget.contentHeight - 180; // 上下のパディングを考慮
+    final availableHeight = widget.contentHeight; // 上下のパディングを考慮
 
     // 最大文字数を取得
     final maxLength = content.fold<int>(
       0,
       (maxLen, line) => line.length > maxLen ? line.length : maxLen,
     );
-
+    print('availableWidth:$availableWidth');
+    print('maxLength:$maxLength');
     // フォントサイズを計算
     final calculatedFontSize = (availableWidth / maxLength) * 1.0; // 係数を1.0に調整
     final baseFontSize = calculatedFontSize.clamp(14.0, 60.0);
+    print('fontSize:$baseFontSize・$calculatedFontSize');
 
     // 1行の高さを計算（フォントサイズ + 行間）
     final lineHeight = baseFontSize * (1 + gk);

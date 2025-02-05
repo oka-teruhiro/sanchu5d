@@ -72,7 +72,10 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
   Widget build(BuildContext context) {
     double w0 = MediaQuery.of(context).size.width;
     double h0 = MediaQuery.of(context).size.height;
-    double h1 = h0 * 0.9;
+    double hTop = 80;
+    double hBottom = 56;
+    double wKazari = 50; //飾り枠pad幅
+    double h1 = h0 - hTop;
 
     return SizeTransition(
       // サイズ変更アニメーション
@@ -101,23 +104,24 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
                 children: [
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.all(40),
+                      padding: EdgeInsets.all(wKazari),
                       child: OmikujiContentWidget(
                         omikuji: widget.omikuji,
-                        contentHeight: h0 - 80,
+                        contentHeight: h0 -hTop - hBottom - wKazari *2,
+                        contentWidth: w0 - wKazari * 2,
                         canStartAnimation: _canStartTextAnimation,  // フラグを渡す
                       ),
                     ),
                   ),
                   // 戻るボタン
                   Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(8.0),
                     child: Center(
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.tealAccent,
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 30,
+                            horizontal: 40,
                             vertical: 8,
                           ),
                         ),
@@ -125,7 +129,7 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
                         child: const Text(
                           '戻る',
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: 20,
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
                           ),
@@ -157,7 +161,7 @@ class BorderPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     double w0 = size.width;
     double h1 = size.height;
-    double h2 = size.height * 0.1;
+    double h2 = 56;
 
     var path = Path();
     path.moveTo(10, 100);
