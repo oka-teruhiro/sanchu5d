@@ -326,13 +326,13 @@ class MeisikiJuuniunState extends State<MeisikiJuuniun> {
                           ],
                         ),
                       ),
-                      // ToDo:■■■■■　通変星解説　■■■■■
+                      // ToDo:■■■■■　十二運解説　■■■■■
                       ExpansionPanel(
                         isExpanded: _listExpanded[4],
                         headerBuilder: (BuildContext context, bool isExpanded) {
                           return  const ListTile(
                             title: Text(
-                              '通変星解説',
+                              '十二運解説',
                               style: TextStyle(
                                 color: Colors.greenAccent,
                                 fontWeight: FontWeight.normal,

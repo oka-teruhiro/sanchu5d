@@ -139,7 +139,7 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
     print('maxLength:$maxLength');
     // フォントサイズを計算
     final calculatedFontSize = (availableWidth / maxLength) * 1.0; // 係数を1.0に調整
-    final baseFontSize = calculatedFontSize.clamp(14.0, 60.0);
+    final baseFontSize = calculatedFontSize.clamp(13.0, 60.0);
     print('fontSize:$baseFontSize・$calculatedFontSize');
 
     // 1行の高さを計算（フォントサイズ + 行間）
