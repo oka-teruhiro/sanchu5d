@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'dart:io' show Platform;
 
 class OmikujiContentWidget extends StatefulWidget {
   final Map<String, dynamic> omikuji;
@@ -112,11 +111,9 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
   @override
   Widget build(BuildContext context) {
     final content = List<String>.from(widget.omikuji['content']);
-    final screenSize = MediaQuery.of(context).size;
 
     // 水平方向のパディングと行間係数を変数化
     final double gk = 1.0; // 行間係数（要調整）：フォントサイズの何倍にするか
-    final double mk = 0.1; // 文字間係数（要調整): フォントサイズの何倍にすうか
     final double webk;
     if (kIsWeb) {
       webk = 20; // web用　有効幅をこの数引いて計算する

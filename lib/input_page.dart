@@ -1,16 +1,11 @@
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:sanchu5d/omikuji/omikuji_page.dart';
-import 'omikuji/omikuji_bottom_sheet.dart';
 import '../quiz/quiz_page_001.dart';
 import '../side_menu.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'main.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // 追加
-import 'omikuji/omikuji_service.dart'; // 追加
 
 class InputPage extends StatefulWidget {
   const InputPage({
@@ -73,7 +68,6 @@ class _InputPageState extends State<InputPage> {
   int seiGatu = 1;
   int seiNiti = 1;
 
-  final OmikujiService _omikujiService = OmikujiService();
 
   @override
   void initState() {
@@ -658,80 +652,5 @@ class _InputPageState extends State<InputPage> {
             ),
           );
         });
-  }
-
-  // 画面下からおみくじの結果が出てくる
-  void _showOmikuji(BuildContext context) async {
-    try {
-      // ローディング表示
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return const Center(
-            child: CircularProgressIndicator(
-              color: Colors.tealAccent,
-            ),
-          );
-        },
-      );
-
-      // データ取得
-      final snapshot = await FirebaseFirestore.instance
-          .collection('omikuji')
-          .where('isActive', isEqualTo: true)
-          .get();
-
-      // ローディング終了
-      if (mounted) Navigator.pop(context);
-
-      // データ件数確認
-      if (snapshot.docs.isEmpty) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('おみくじがありません'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-        return;
-      }
-
-      // ランダムにおみくじを1つ選択
-      final random = Random();
-      final randomDoc = snapshot.docs[random.nextInt(snapshot.docs.length)];
-      final omikuji = randomDoc.data();
-
-      // おみくじ表示
-      if (mounted) {
-        // おみくじ表示
-        showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          transitionAnimationController: AnimationController(
-            duration: const Duration(seconds: 1),
-            vsync: Navigator.of(context),
-          ),
-          builder: (BuildContext context) {
-            return OmikujiBottomSheet(
-              omikuji: omikuji,
-            );
-          },
-        );
-
-        // 選択回数を更新
-        await _omikujiService.incrementSelectedCount(randomDoc.id);
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('エラーが発生しました: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
   }
 }
