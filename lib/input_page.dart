@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:sanchu5d/omikuji/omikuji_page.dart';
 import 'omikuji/omikuji_bottom_sheet.dart';
 import '../quiz/quiz_page_001.dart';
 import '../side_menu.dart';
@@ -218,7 +219,8 @@ class _InputPageState extends State<InputPage> {
               style: const TextStyle(
                 color: Colors.pinkAccent,
                 fontWeight: FontWeight.bold,
-              )),
+              ),
+          ),
         ),
         body: Center(
           child: Column(
@@ -252,8 +254,13 @@ class _InputPageState extends State<InputPage> {
                     ),
                   ),
                   onPressed: () {
-                    _showOmikuji(context);
-                    setState(() {});
+                    //TODO: おみくじページへ飛ぶ
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => OmikujiPage(),
+                      )
+                    );
                   },
                 ),
               ),
