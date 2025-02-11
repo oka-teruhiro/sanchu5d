@@ -6,6 +6,7 @@ class OmikujiContentWidget extends StatefulWidget {
   final double contentHeight;
   final double contentWidth;
   final bool canStartAnimation; // アニメーション開始制御用のフラグを追加
+  final VoidCallback? onCharacterDisplay;
 
   const OmikujiContentWidget({
     Key? key,
@@ -13,6 +14,7 @@ class OmikujiContentWidget extends StatefulWidget {
     required this.contentHeight,
     required this.contentWidth,
     required this.canStartAnimation, // 新しいプロパティ
+    this.onCharacterDisplay,
   }) : super(key: key);
 
   @override
@@ -93,6 +95,10 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
     setState(() {
       _currentText = content[_currentLine].substring(0, _currentChar + 1);
       _currentChar++;
+      // ここでアニメーションコントローラーに通知
+      if (widget.onCharacterDisplay != null) {
+        widget.onCharacterDisplay!();
+      }
     });
 
     await Future.delayed(const Duration(milliseconds: 50));
