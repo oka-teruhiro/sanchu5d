@@ -20,6 +20,14 @@ class _OmikujiPageState extends State<OmikujiPage> {
   bool _showPrayButton = true; // 祈りボタンの表示状態を管理
   bool _showOmikujiButton = false; // おみくじボタンの表示状態を管理
   bool _showInori = false; // 祈り中を管理
+  late final DateTime _pageLoadTime; // ページ表示時刻
+
+  @override
+  void initState() {
+    super.initState();
+    _pageLoadTime = DateTime.now(); // ページ表示時刻を記録
+  }
+
 
   void _togglePanel(int index) {
     setState(() {
@@ -41,7 +49,7 @@ class _OmikujiPageState extends State<OmikujiPage> {
     });
 
     // 1秒後におみくじボタンを表示
-    Future.delayed(const Duration(seconds: 10), () {
+    Future.delayed(const Duration(seconds: 2), () {
       if (mounted) {
         setState(() {
           _showInori = false;
@@ -56,7 +64,6 @@ class _OmikujiPageState extends State<OmikujiPage> {
     setState(() {
       _showOmikujiButton = false;
     });
-
   }
 
   @override
@@ -92,8 +99,7 @@ class _OmikujiPageState extends State<OmikujiPage> {
                       // ToDo:■■■■■　使用方法　■■■■■
                       ExpansionPanel(
                         isExpanded: _listExpanded[0],
-                        headerBuilder:
-                            (BuildContext context, bool isExpanded) {
+                        headerBuilder: (BuildContext context, bool isExpanded) {
                           return ListTile(
                             title: Text(
                               '使用方法',
@@ -117,8 +123,7 @@ class _OmikujiPageState extends State<OmikujiPage> {
                       // ToDo:■■■■■　東洋五術　■■■■■
                       ExpansionPanel(
                         isExpanded: _listExpanded[1],
-                        headerBuilder:
-                            (BuildContext context, bool isExpanded) {
+                        headerBuilder: (BuildContext context, bool isExpanded) {
                           return ListTile(
                             title: Text(
                               '東洋五術からみた「おみくじ」',
@@ -149,8 +154,7 @@ class _OmikujiPageState extends State<OmikujiPage> {
                       // ToDo:■■■■■　初詣　■■■■■
                       ExpansionPanel(
                         isExpanded: _listExpanded[2],
-                        headerBuilder:
-                            (BuildContext context, bool isExpanded) {
+                        headerBuilder: (BuildContext context, bool isExpanded) {
                           return ListTile(
                             title: Text(
                               '初詣からみた「おみくじ」',
@@ -181,8 +185,7 @@ class _OmikujiPageState extends State<OmikujiPage> {
                       // ToDo:■■■■■　精誠　■■■■■
                       ExpansionPanel(
                         isExpanded: _listExpanded[3],
-                        headerBuilder:
-                            (BuildContext context, bool isExpanded) {
+                        headerBuilder: (BuildContext context, bool isExpanded) {
                           return ListTile(
                             title: Text(
                               '略式としての初詣',
@@ -213,8 +216,7 @@ class _OmikujiPageState extends State<OmikujiPage> {
                       // ToDo:■■■■■　精誠　■■■■■
                       ExpansionPanel(
                         isExpanded: _listExpanded[4],
-                        headerBuilder:
-                            (BuildContext context, bool isExpanded) {
+                        headerBuilder: (BuildContext context, bool isExpanded) {
                           return ListTile(
                             title: Text(
                               '「おみくじ」の精度を上げるには',
@@ -279,7 +281,7 @@ class _OmikujiPageState extends State<OmikujiPage> {
                         onPressed: () {
                           _onOmikujiButtonTapped();
                           _showOmikuji(context);
-                          },
+                        },
                         child: const Text(
                           'おみくじを引く',
                           style: TextStyle(
@@ -289,8 +291,7 @@ class _OmikujiPageState extends State<OmikujiPage> {
                           ),
                         ),
                       ),
-                    if (_showInori)
-                      Text('祈りを捧げてください'),
+                    if (_showInori) Text('祈りを捧げてください'),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.tealAccent,
@@ -334,32 +335,9 @@ class _OmikujiPageState extends State<OmikujiPage> {
       );
 
       // データ取得
-      final snapshot = await FirebaseFirestore.instance
-          .collection('omikuji')
-          .where('isActive', isEqualTo: true)
-          .get();
+      final result = await _omikujiService.selectOmikujiByTiming(_pageLoadTime);
 
-      // ローディング終了
       if (mounted) Navigator.pop(context);
-
-      // データ件数確認
-      if (snapshot.docs.isEmpty) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('おみくじがありません'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-        return;
-      }
-
-      // ランダムにおみくじを1つ選択
-      final random = Random();
-      final randomDoc = snapshot.docs[random.nextInt(snapshot.docs.length)];
-      final omikuji = randomDoc.data();
-
       // おみくじ表示
       if (mounted) {
         // おみくじ表示
@@ -372,19 +350,17 @@ class _OmikujiPageState extends State<OmikujiPage> {
           ),
           builder: (BuildContext context) {
             return OmikujiBottomSheet(
-              omikuji: omikuji,
+              omikuji: result['data'],
             );
           },
         );
-
-        // 選択回数を更新
-        await _omikujiService.incrementSelectedCount(randomDoc.id);
       }
     } catch (e) {
       if (mounted) {
+        Navigator.of(context).popUntil((route) => route.isFirst);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('エラーが発生しました: $e'),
+            content: Text(e.toString()),
             backgroundColor: Colors.red,
           ),
         );

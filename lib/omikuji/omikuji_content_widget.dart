@@ -132,12 +132,12 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
       0,
       (maxLen, line) => line.length > maxLen ? line.length : maxLen,
     );
-    print('availableWidth:$availableWidth');
-    print('maxLength:$maxLength');
+    //print('availableWidth:$availableWidth');
+    //print('maxLength:$maxLength');
     // フォントサイズを計算
     final calculatedFontSize = (availableWidth / maxLength) * 1.0; // 係数を1.0に調整
     final baseFontSize = calculatedFontSize.clamp(13.0, 60.0);
-    print('fontSize:$baseFontSize・$calculatedFontSize');
+    //print('fontSize:$baseFontSize・$calculatedFontSize');
 
     // 1行の高さを計算（フォントサイズ + 行間）
     final lineHeight = baseFontSize * (1 + gk);
