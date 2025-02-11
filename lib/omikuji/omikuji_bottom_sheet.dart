@@ -72,7 +72,7 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
   Widget build(BuildContext context) {
     double w0 = MediaQuery.of(context).size.width;
     double h0 = MediaQuery.of(context).size.height;
-    double hTop = 80;
+    double hTop = 24; // 80
     double hBottom = 56;
     double wKazari = 50; //飾り枠pad幅
     double h1 = h0 - hTop;
@@ -85,38 +85,70 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
         width: w0,
         height: h1,
         child: Container(
-          color: Colors.black12,
+          color: Colors.black, // todo:
           child: Stack(
             children: [
-              // 飾り枠のレイヤー
-              AnimatedBuilder(
-                animation: _pathAnimation,
-                builder: (context, child) {
-                  return CustomPaint(
-                    painter: BorderPainter(_pathAnimation.value),
-                    size: Size(w0, h1),
-                  );
-                },
-              ),
-
-              // メインコンテンツ領域
               Column(
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.all(wKazari),
-                      child: OmikujiContentWidget(
-                        omikuji: widget.omikuji,
-                        contentHeight: h0 -hTop - hBottom - wKazari *2,
-                        contentWidth: w0 - wKazari * 2,
-                        canStartAnimation: _canStartTextAnimation,  // フラグを渡す
+                  Center(
+                    child: SizedBox(
+                      width: 100,
+                      height: 100,
+                      child: Container(
+                        color: Colors.orange,
+                        child: Image.asset('assets/images/omikuji/光彩.jpg'),
                       ),
                     ),
                   ),
-                  // 戻るボタン
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Center(
+                ],
+              ),
+              // 飾り枠のレイヤー
+              Transform.translate(
+                offset: const Offset(0, 100),
+                child: Column(
+                  children: [
+                    AnimatedBuilder(
+                      animation: _pathAnimation,
+                      builder: (context, child) {
+                        return CustomPaint(
+                          painter: BorderPainter(_pathAnimation.value),
+                          size: Size(w0, h1 - 100),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+
+              // メインコンテンツ領域
+              Transform.translate(
+                offset: const Offset(0, 100),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.all(wKazari),
+                        child: OmikujiContentWidget(
+                          omikuji: widget.omikuji,
+                          contentHeight: h0 -hTop - hBottom - wKazari *2 - 100 - 66,
+                          contentWidth: w0 - wKazari * 2,
+                          canStartAnimation: _canStartTextAnimation,  // フラグを渡す
+                        ),
+                      ),
+                    ),
+
+                  ],
+                ),
+              ),
+              // 戻るボタン
+              Transform.translate(
+                offset: Offset(0,  h1 - 60),
+                child: SizedBox(
+                  height: 60,
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.tealAccent,
@@ -137,7 +169,7 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
                       ),
                     ),
                   ),
-                ],
+                ),
               ),
             ],
           ),

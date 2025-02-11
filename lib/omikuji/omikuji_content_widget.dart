@@ -180,16 +180,6 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
             child: Stack(
               // Stackを使用して左余白を固定
               children: [
-                Positioned(
-                  // 左余白用のスペース
-                  left: 0,
-                  top: 0,
-                  bottom: 0,
-                  width: 0,
-                  child: Container(
-                    color: Colors.red,
-                  ),
-                ),
                 Padding(
                   padding:
                       EdgeInsets.only(left: 0, right: 0, top: verticalPadding),
