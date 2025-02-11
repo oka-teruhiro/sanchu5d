@@ -17,22 +17,13 @@ class OmikujiPage extends StatefulWidget {
 class _OmikujiPageState extends State<OmikujiPage> {
   final OmikujiService _omikujiService = OmikujiService();
   late final List<bool> _listExpanded = [true, false, false, false, false];
+  bool _showPrayButton = true; // 祈りボタンの表示状態を管理
+  bool _showOmikujiButton = false; // おみくじボタンの表示状態を管理
+  bool _showInori = false; // 祈り中を管理
 
   void _togglePanel(int index) {
     setState(() {
-      if (index == 0) {
-        _listExpanded[0] = !_listExpanded[0];
-      } else if (index == 1) {
-        _listExpanded[1] = !_listExpanded[1];
-      } else if (index == 2) {
-        _listExpanded[2] = !_listExpanded[2];
-      } else if (index == 3) {
-        _listExpanded[3] = !_listExpanded[3];
-      } else if (index == 4) {
-        _listExpanded[4] = !_listExpanded[4];
-      } else {
-        _listExpanded[5] = !_listExpanded[5];
-      }
+      _listExpanded[index] = !_listExpanded[index];
     });
   }
 
@@ -40,6 +31,32 @@ class _OmikujiPageState extends State<OmikujiPage> {
     setState(() {
       _listExpanded[index] = false;
     });
+  }
+
+  // 祈りボタンがタップされたときの処理
+  void _onPrayButtonTapped() {
+    setState(() {
+      _showPrayButton = false;
+      _showInori = true;
+    });
+
+    // 1秒後におみくじボタンを表示
+    Future.delayed(const Duration(seconds: 10), () {
+      if (mounted) {
+        setState(() {
+          _showInori = false;
+          _showOmikujiButton = true;
+        });
+      }
+    });
+  }
+
+  // おみくじボタンがタップされた時の処理
+  void _onOmikujiButtonTapped() {
+    setState(() {
+      _showOmikujiButton = false;
+    });
+
   }
 
   @override
@@ -70,7 +87,7 @@ class _OmikujiPageState extends State<OmikujiPage> {
                     expansionCallback: (int panelIndex, bool isExpanded) {
                       _togglePanel(panelIndex);
                     },
-                    animationDuration: const Duration(seconds: 1),
+                    animationDuration: const Duration(seconds: 10),
                     children: [
                       // ToDo:■■■■■　使用方法　■■■■■
                       ExpansionPanel(
@@ -239,24 +256,41 @@ class _OmikujiPageState extends State<OmikujiPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.tealAccent,
-                      ),
-                      child: const Text(
-                        'おみくじを引く',
-                        style: TextStyle(
-                          //backgroundColor:
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                    if (_showPrayButton)
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.tealAccent,
+                        ),
+                        onPressed: _onPrayButtonTapped,
+                        child: const Text(
+                          '祈りを捧げる',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
                         ),
                       ),
-                      onPressed: () {
-                        _showOmikuji(context);
-                        //Navigator.pop(context);
-                      },
-                    ),
+                    if (_showOmikujiButton)
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue, // 青色に変更
+                        ),
+                        onPressed: () {
+                          _onOmikujiButtonTapped();
+                          _showOmikuji(context);
+                          },
+                        child: const Text(
+                          'おみくじを引く',
+                          style: TextStyle(
+                            color: Colors.white, // 青背景に合わせて文字色を白に
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    if (_showInori)
+                      Text('祈りを捧げてください'),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.tealAccent,
