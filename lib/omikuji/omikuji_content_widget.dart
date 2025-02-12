@@ -7,6 +7,7 @@ class OmikujiContentWidget extends StatefulWidget {
   final double contentWidth;
   final bool canStartAnimation; // アニメーション開始制御用のフラグを追加
   final VoidCallback? onCharacterDisplay;
+  final VoidCallback? onLineComplete;
 
   const OmikujiContentWidget({
     Key? key,
@@ -15,6 +16,7 @@ class OmikujiContentWidget extends StatefulWidget {
     required this.contentWidth,
     required this.canStartAnimation, // 新しいプロパティ
     this.onCharacterDisplay,
+    this.onLineComplete,
   }) : super(key: key);
 
   @override
@@ -76,6 +78,9 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
         _currentText = '';
         _currentChar = 0;
         _currentLine++;
+        if (widget.onLineComplete != null) { // 追加
+          widget.onLineComplete!();
+        }// 追加
       });
 
       await Future.delayed(const Duration(milliseconds: 100)); // Todo:
@@ -101,7 +106,7 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
       }
     });
 
-    await Future.delayed(const Duration(milliseconds: 50));
+    await Future.delayed(const Duration(milliseconds: 100));
     if (_scrollController.hasClients) {
       await _scrollController.animateTo(
         _scrollController.position.maxScrollExtent,

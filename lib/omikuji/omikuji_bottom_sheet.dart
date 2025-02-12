@@ -24,30 +24,44 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
   late Animation<double> _slideAnimation; // スライドアップ用
   late Animation<double> _pathAnimation; // パス描画用
   bool _canStartTextAnimation = false; // テキストアニメーション開始フラグ
-  //late Animation<double> _scaleXAnimation; // 光彩アニメーション用ｘ軸
-  //late Animation<double> _scaleYAnimation; // 光彩アニメーション用ｙ軸
   // 光彩アニメーション用の変数を追加
   double _currentScaleX = 1.0;
   double _currentScaleY = 1.0;
   // 回転用のアニメーションコントローラーを追加
   late AnimationController _rotationController;
-  late Animation<double> _rotationAnimation;
-  Random _random = Random(); // 光彩アニメーション用
+  //late Animation<double> _rotationAnimation;
 
-  // 文字表示時のコールバック
-  void _onCharacterDisplay() {
-    if (mounted) {
-      setState(() {
-        _currentScaleX = 1.0 + (_random.nextDouble() * 0.1 - 0.05);
-        _currentScaleY = _currentScaleX;
-        //_currentScaleY = 1.0 + (_random.nextDouble() * 0.4 - 0.2);
-      });
-    }
-  }
+  late AnimationController _pulseController;
+  late AnimationController _moveController;  // 移動アニメーション用
+  late Animation<double> _pulseAnimation;
+  late Animation<double> _moveAnimation;     // 移動用
+  late Animation<Offset> _positionAnimation; // 位置移動用
+  bool _isTypingText = false;
+
+  final Random _random = Random(); // 光彩アニメーション用
+
 
   @override
   void initState() {
     super.initState();
+
+    // 移動アニメーション (0.5秒)
+    _moveController = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+
+    // イージングを使用して最初は早く、最後はゆっくりに
+    _moveAnimation = CurvedAnimation(
+      parent: _moveController,
+      curve: Curves.easeOut,
+    );
+
+    // 中央から上部への移動
+    _positionAnimation = Tween<Offset>(
+      begin: const Offset(0.0, 0.0),    // 画面中央
+      end: const Offset(0.0, -0.3),     // 画面上部（調整可能）
+    ).animate(_moveAnimation);
 
     // コントローラーの設定
     _controller = AnimationController(
@@ -67,7 +81,21 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
       end: 1.0,
     ).animate(CurvedAnimation(
       parent: _controller,
-      curve: const Interval(0.2, 0.95, curve: Curves.linear),
+      curve: const Interval(0.2, 1.0, curve: Curves.linear),
+    ));
+
+    // 10秒周期の脈動アニメーション
+    _pulseController = AnimationController(
+      duration: const Duration(seconds: 6),
+      vsync: this,
+    );
+
+    _pulseAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.6,
+    ).animate(CurvedAnimation(
+      parent: _pulseController,
+      curve: Curves.easeInOut,
     ));
 
     // 回転アニメーションの設定を追加
@@ -76,17 +104,26 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
       vsync: this,
     ); // 継続的な回転
 
-    _rotationAnimation = Tween<double>(
+    // アニメーション順序の制御
+    _moveController.forward().then((_) {
+      Future.delayed(const Duration(milliseconds: 100), () {
+        _controller.forward();
+        _pulseController.repeat(reverse: true);
+        _rotationController.repeat();
+      });
+    });
+
+    /*_rotationAnimation = Tween<double>(
       begin: 0,
       end: 2 * 3.14159, // 2π (1回転)
-    ).animate(_rotationController);
+    ).animate(_rotationController);*/
 
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         setState(() {
           _canStartTextAnimation = true;
           // スライドアニメーション完了時に回転を開始
-          _rotationController.repeat();
+          //_rotationController.repeat();
         });
       }
     });
@@ -120,31 +157,67 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
     });*/
 
     // アニメーション開始
-    _controller.forward();
+    _controller.forward();//Todo:
   }
+
+  // 文字表示時のコールバック
+  void _onCharacterDisplay() {
+    if (mounted) {
+      setState(() {
+        _isTypingText = true;  // フラグ設定を追加
+        _currentScaleX = 1.0 + (_random.nextDouble() * 0.2 - 0.1);
+        _currentScaleY = _currentScaleX;
+        //_currentScaleY = 1.0 + (_random.nextDouble() * 0.4 - 0.2);
+      });
+    }
+  }
+
+  // 行の表示が終わった時の処理を追加
+  void _onLineComplete() {
+    if (mounted) {
+      setState(() {
+        _isTypingText = false;
+      });
+    }
+  }
+
 
   // 光彩画像のビルド部分を修正
   Widget _buildKosaiImage() {
-    return Container(
-      width: 100,
-      height: 100,
-      alignment: Alignment.center,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 50), // アニメーションの持続時間
-        transform: Matrix4.identity()
-          ..scale(_currentScaleX, _currentScaleY)
-          ..rotateZ(_rotationAnimation.value), // 回転を追加
-        transformAlignment: Alignment.center,
-        width: 100,
-        height: 100,
-        decoration: BoxDecoration(
-          // color: Colors.orange, // デバッグ用
-          image: DecorationImage(
-            image: AssetImage('assets/images/omikuji/光彩.jpg'),
-            fit: BoxFit.cover,
+    return AnimatedBuilder(
+      animation: Listenable.merge([
+        _moveController,
+        _pulseController,
+        _rotationController,
+      ]),
+      builder: (context, child) {
+        return Transform.translate(
+          offset: Offset(0, _positionAnimation.value.dy * MediaQuery.of(context).size.height),
+          child: Container(
+            width: 100,
+            height: 100,
+            alignment: Alignment.center,
+            child: Transform(
+              alignment: Alignment.center,
+              transform: Matrix4.identity()
+                ..scale(
+                    _isTypingText ?
+                    _pulseAnimation.value * _currentScaleX :
+                    _pulseAnimation.value
+                )
+                ..rotateZ(_rotationController.value * 2 * pi),
+              child: Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/images/omikuji/光彩.jpg'),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -152,6 +225,8 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
   void dispose() {
     _controller.dispose(); // コントローラーの破棄
     _rotationController.dispose(); // 回転コントローラーの破棄を追加
+    _pulseController.dispose();
+    _moveController.dispose();
     super.dispose();
   }
 
@@ -222,6 +297,7 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
                           canStartAnimation: _canStartTextAnimation,
                           // フラグを渡す
                           onCharacterDisplay: _onCharacterDisplay, // コールバックを追加
+                          onLineComplete: _onLineComplete,  // 追加
                         ),
                       ),
                     ),

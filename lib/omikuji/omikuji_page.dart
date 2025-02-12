@@ -1,10 +1,11 @@
-import 'dart:math';
+//import 'dart:math';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
+//import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:sanchu5d/omikuji/omikuji_siyouhou.dart';
 
 import 'omikuji_bottom_sheet.dart';
+import 'omikuji_prayer_screen.dart';
 import 'omikuji_service.dart';
 
 class OmikujiPage extends StatefulWidget {
@@ -18,8 +19,8 @@ class _OmikujiPageState extends State<OmikujiPage> {
   final OmikujiService _omikujiService = OmikujiService();
   late final List<bool> _listExpanded = [true, false, false, false, false];
   bool _showPrayButton = true; // 祈りボタンの表示状態を管理
-  bool _showOmikujiButton = false; // おみくじボタンの表示状態を管理
-  bool _showInori = false; // 祈り中を管理
+  //bool _showOmikujiButton = false; // おみくじボタンの表示状態を管理
+  //bool _showInori = false; // 祈り中を管理
   late final DateTime _pageLoadTime; // ページ表示時刻
 
   @override
@@ -42,28 +43,20 @@ class _OmikujiPageState extends State<OmikujiPage> {
   }
 
   // 祈りボタンがタップされたときの処理
-  void _onPrayButtonTapped() {
-    setState(() {
-      _showPrayButton = false;
-      _showInori = true;
-    });
+  void _onPrayButtonTapped() async {
+    // PrayerScreenへの遷移
+    final result = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(builder: (context) => const OmikujiPrayerScreen()),
+    );
 
-    // 1秒後におみくじボタンを表示
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
-        setState(() {
-          _showInori = false;
-          _showOmikujiButton = true;
-        });
-      }
-    });
-  }
-
-  // おみくじボタンがタップされた時の処理
-  void _onOmikujiButtonTapped() {
-    setState(() {
-      _showOmikujiButton = false;
-    });
+    // trueが返ってきた場合（おみくじを引くがタップされた場合）
+    if (result == true && mounted) {
+      _showOmikuji(context);
+      setState(() {
+        _showPrayButton = false;
+      });
+    }
   }
 
   @override
@@ -273,25 +266,6 @@ class _OmikujiPageState extends State<OmikujiPage> {
                           ),
                         ),
                       ),
-                    if (_showOmikujiButton)
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue, // 青色に変更
-                        ),
-                        onPressed: () {
-                          _onOmikujiButtonTapped();
-                          _showOmikuji(context);
-                        },
-                        child: const Text(
-                          'おみくじを引く',
-                          style: TextStyle(
-                            color: Colors.white, // 青背景に合わせて文字色を白に
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                    if (_showInori) Text('祈りを捧げてください'),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.tealAccent,
@@ -344,8 +318,9 @@ class _OmikujiPageState extends State<OmikujiPage> {
         showModalBottomSheet(
           context: context,
           isScrollControlled: true,
+          backgroundColor: Colors.transparent,
           transitionAnimationController: AnimationController(
-            duration: const Duration(seconds: 1),
+            duration: const Duration(milliseconds: 500),
             vsync: Navigator.of(context),
           ),
           builder: (BuildContext context) {
