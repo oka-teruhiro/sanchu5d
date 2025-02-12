@@ -44,19 +44,14 @@ class _OmikujiPageState extends State<OmikujiPage> {
 
   // 祈りボタンがタップされたときの処理
   void _onPrayButtonTapped() async {
-    // PrayerScreenへの遷移
-    final result = await Navigator.push<bool>(
+    setState(() {
+      _showPrayButton = false;
+    });
+
+    await Navigator.push<void>(
       context,
       MaterialPageRoute(builder: (context) => const OmikujiPrayerScreen()),
     );
-
-    // trueが返ってきた場合（おみくじを引くがタップされた場合）
-    if (result == true && mounted) {
-      _showOmikuji(context);
-      setState(() {
-        _showPrayButton = false;
-      });
-    }
   }
 
   @override

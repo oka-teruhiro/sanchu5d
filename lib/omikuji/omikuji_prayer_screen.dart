@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 
+import 'omikuji_bottom_sheet.dart';
+import 'omikuji_service.dart';
+
 class OmikujiPrayerScreen extends StatefulWidget {
   const OmikujiPrayerScreen({super.key});
 
@@ -10,15 +13,15 @@ class OmikujiPrayerScreen extends StatefulWidget {
 
 class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
     with TickerProviderStateMixin {
-  late AnimationController _scaleController;    // 初期拡大用
+  late AnimationController _scaleController; // 初期拡大用
   late AnimationController _rotationController; // 回転用
-  late AnimationController _pulseController;    // 脈動用
-  late AnimationController _moveController;    // 追加：移動用
-  late Animation<double> _scaleAnimation;       // 0→300のスケール
-  late Animation<double> _pulseAnimation;       // 1.0→0.8の脈動
-  late Animation<Offset> _positionAnimation;   // 追加：位置用
-  bool _showOmikujiButton = false;             // おみくじボタン表示制御
-  bool _isMoving = false;                      // 追加：移動中フラグ
+  late AnimationController _pulseController; // 脈動用
+  late AnimationController _moveController; // 追加：移動用
+  late Animation<double> _scaleAnimation; // 0→300のスケール
+  late Animation<double> _pulseAnimation; // 1.0→0.8の脈動
+  late Animation<Offset> _positionAnimation; // 追加：位置用
+  bool _showOmikujiButton = false; // おみくじボタン表示制御
+  bool _isMoving = false; // 追加：移動中フラグ
 
   @override
   void initState() {
@@ -98,7 +101,7 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
     _scaleController.dispose();
     _rotationController.dispose();
     _pulseController.dispose();
-    _moveController.dispose();  // 追加
+    _moveController.dispose(); // 追加
     super.dispose();
   }
 
@@ -109,109 +112,162 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
 
     await _moveController.forward();
 
-    // 移動完了後に画面遷移
+    // ここでおみくじを表示
     if (mounted) {
-      Navigator.pop(context, true);
+      try {
+        // ローディング表示
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return const Center(
+              child: CircularProgressIndicator(
+                color: Colors.tealAccent,
+              ),
+            );
+          },
+        );
+
+        // データ取得
+        final omikujiService = OmikujiService();
+        final result = await omikujiService.selectOmikujiByTiming(
+            DateTime.now());
+
+        if (mounted) Navigator.pop(context);
+
+        if (mounted) {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            transitionAnimationController: AnimationController(
+              duration: const Duration(milliseconds: 500),
+              vsync: Navigator.of(context),
+            ),
+            builder: (BuildContext context) {
+              return OmikujiBottomSheet(
+                omikuji: result['data'],
+              );
+            },
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(e.toString()),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
     }
   }
+//}
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Stack(
-        children: [
-          // 光彩アニメーション
-          Center(
-            child: AnimatedBuilder(
-              animation: Listenable.merge([
-                _scaleController,
-                _rotationController,
-                _pulseController,
-                _moveController,
-              ]),
-              builder: (context, child) {
-                final scale = _isMoving ?
-                (100.0 / 300.0) * _pulseAnimation.value :
-                _scaleAnimation.value * _pulseAnimation.value / 300;
+@override
+Widget build(BuildContext context) {
+  // buildメソッドをクラス内に移動
+  return Scaffold(
+    backgroundColor: Colors.black,
+    body: Stack(
+      children: [
+        // 光彩アニメーション
+        Center(
+          child: AnimatedBuilder(
+            animation: Listenable.merge([
+              _scaleController,
+              _rotationController,
+              _pulseController,
+              _moveController,
+            ]),
+            builder: (context, child) {
+              final scale = _isMoving ?
+              (100.0 / 300.0) * _pulseAnimation.value :
+              _scaleAnimation.value * _pulseAnimation.value / 300;
 
-                return Transform.translate(
-                  offset: _positionAnimation.value * MediaQuery.of(context).size.height,
-                  child: Transform(
-                    alignment: Alignment.center,
-                    transform: Matrix4.identity()
-                      ..scale(scale)
-                      ..rotateZ(_rotationController.value * 2 * pi),
-                    child: SizedBox(
-                      width: 300,
-                      height: 300,
-                      child: Image.asset(
-                        'assets/images/omikuji/光彩.jpg',
-                        fit: BoxFit.cover,
-                      ),
+              return Transform.translate(
+                offset: _positionAnimation.value * MediaQuery
+                    .of(context)
+                    .size
+                    .height,
+                child: Transform(
+                  alignment: Alignment.center,
+                  transform: Matrix4.identity()
+                    ..scale(scale)
+                    ..rotateZ(_rotationController.value * 2 * pi),
+                  child: SizedBox(
+                    width: 300,
+                    height: 300,
+                    child: Image.asset(
+                      'assets/images/omikuji/光彩.jpg',
+                      fit: BoxFit.cover,
                     ),
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
           ),
-          // 下部のボタン配置
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 20,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // 左側：祈ってください/おみくじを引くボタン
-                  AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 500),
-                    child: _showOmikujiButton
-                        ? ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                      ),
-                      onPressed:_onOmikujiTap,
-                      child: const Text(
-                        'おみくじを引く',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                    )
-                        : const Text(
-                      '祈ってください',
+        ),
+        // 下部のボタン配置
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 20,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // 左側：祈ってください/おみくじを引くボタン
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 500),
+                  child: _showOmikujiButton
+                      ? ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                    ),
+                    onPressed: _onOmikujiTap,
+                    child: const Text(
+                      'おみくじを引く',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                  // 右側：戻るボタン
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.tealAccent,
-                    ),
-                    onPressed: () => Navigator.pop(context, false),
-                    child: const Text(
-                      '戻る',
-                      style: TextStyle(
-                        color: Colors.black,
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
                     ),
+                  )
+                      : const Text(
+                    '祈ってください',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
                   ),
-                ],
-              ),
+                ),
+                // 右側：戻るボタン
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.tealAccent,
+                  ),
+                  onPressed: () => Navigator.pop(context, false),
+                  child: const Text(
+                    '戻る',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
+        ),
+      ],
+    ),
+  );
+} // buildメソッドの終わり
+
+} // クラスの終わり
