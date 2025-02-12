@@ -323,6 +323,8 @@ class _OmikujiPageState extends State<OmikujiPage> {
             duration: const Duration(milliseconds: 500),
             vsync: Navigator.of(context),
           ),
+          // 画面遷移を維持したまま表示
+          routeSettings: const RouteSettings(name: '/omikuji_result'),
           builder: (BuildContext context) {
             return OmikujiBottomSheet(
               omikuji: result['data'],

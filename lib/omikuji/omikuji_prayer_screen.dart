@@ -13,9 +13,12 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
   late AnimationController _scaleController;    // 初期拡大用
   late AnimationController _rotationController; // 回転用
   late AnimationController _pulseController;    // 脈動用
+  late AnimationController _moveController;    // 追加：移動用
   late Animation<double> _scaleAnimation;       // 0→300のスケール
   late Animation<double> _pulseAnimation;       // 1.0→0.8の脈動
+  late Animation<Offset> _positionAnimation;   // 追加：位置用
   bool _showOmikujiButton = false;             // おみくじボタン表示制御
+  bool _isMoving = false;                      // 追加：移動中フラグ
 
   @override
   void initState() {
@@ -34,6 +37,21 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
       curve: Curves.easeOut,
     ));
 
+    // 移動アニメーション (0.5秒)を追加
+    _moveController = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+
+    // 中心から上部への移動
+    _positionAnimation = Tween<Offset>(
+      begin: const Offset(0.0, 0.0),
+      end: const Offset(0.0, -0.3),
+    ).animate(CurvedAnimation(
+      parent: _moveController,
+      curve: Curves.easeOut,
+    ));
+
     // 回転アニメーション (60秒/1回転)
     _rotationController = AnimationController(
       duration: const Duration(seconds: 60),
@@ -42,7 +60,7 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
 
     // 脈動アニメーション (10秒周期)
     _pulseController = AnimationController(
-      duration: const Duration(seconds: 10),
+      duration: const Duration(seconds: 3),
       vsync: this,
     );
     _pulseAnimation = Tween<double>(
@@ -54,7 +72,7 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
     ));
 
     // 1秒後に拡大開始
-    Future.delayed(const Duration(seconds: 1), () {
+    Future.delayed(const Duration(milliseconds: 300), () {
       _scaleController.forward();
     });
 
@@ -80,7 +98,21 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
     _scaleController.dispose();
     _rotationController.dispose();
     _pulseController.dispose();
+    _moveController.dispose();  // 追加
     super.dispose();
+  }
+
+  void _onOmikujiTap() async {
+    setState(() {
+      _isMoving = true;
+    });
+
+    await _moveController.forward();
+
+    // 移動完了後に画面遷移
+    if (mounted) {
+      Navigator.pop(context, true);
+    }
   }
 
   @override
@@ -96,21 +128,27 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
                 _scaleController,
                 _rotationController,
                 _pulseController,
+                _moveController,
               ]),
               builder: (context, child) {
-                return Transform(
-                  alignment: Alignment.center,
-                  transform: Matrix4.identity()
-                    ..scale(
-                      _scaleAnimation.value * _pulseAnimation.value / 300,
-                    )
-                    ..rotateZ(_rotationController.value * 2 * pi),
-                  child: SizedBox(
-                    width: 300,
-                    height: 300,
-                    child: Image.asset(
-                      'assets/images/omikuji/光彩.jpg',
-                      fit: BoxFit.cover,
+                final scale = _isMoving ?
+                (100.0 / 300.0) * _pulseAnimation.value :
+                _scaleAnimation.value * _pulseAnimation.value / 300;
+
+                return Transform.translate(
+                  offset: _positionAnimation.value * MediaQuery.of(context).size.height,
+                  child: Transform(
+                    alignment: Alignment.center,
+                    transform: Matrix4.identity()
+                      ..scale(scale)
+                      ..rotateZ(_rotationController.value * 2 * pi),
+                    child: SizedBox(
+                      width: 300,
+                      height: 300,
+                      child: Image.asset(
+                        'assets/images/omikuji/光彩.jpg',
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                 );
@@ -135,10 +173,7 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
                       ),
-                      onPressed: () {
-                        // おみくじを引く処理
-                        Navigator.pop(context, true);
-                      },
+                      onPressed:_onOmikujiTap,
                       child: const Text(
                         'おみくじを引く',
                         style: TextStyle(

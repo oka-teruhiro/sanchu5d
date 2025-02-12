@@ -253,7 +253,7 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
         width: w0,
         height: h1,
         child: Container(
-          color: Colors.black, // todo:
+          color: Colors.black.withOpacity(0.2), // todo:
           child: Stack(
             children: [
               // 光彩画像のレイヤー
