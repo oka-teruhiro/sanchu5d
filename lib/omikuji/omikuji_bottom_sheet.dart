@@ -246,7 +246,7 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
         width: w0,
         height: h1 - h2, // おみくじシートの高さ
         child: Container(
-          color: Colors.teal.withAlpha(50), // おみくじシートに色をつけ透かす
+          color: Colors.black.withAlpha(150), // おみくじシートに色をつけ透かす
           child: Stack(
             children: [
               // 光彩画像のレイヤー
