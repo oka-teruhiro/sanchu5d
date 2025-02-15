@@ -78,21 +78,22 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
         _currentText = '';
         _currentChar = 0;
         _currentLine++;
-        if (widget.onLineComplete != null) { // 追加
+        if (widget.onLineComplete != null) {
+          // 追加
           widget.onLineComplete!();
-        }// 追加
+        } // 追加
       });
 
-      await Future.delayed(const Duration(milliseconds: 100)); // Todo:
+      await Future.delayed(const Duration(milliseconds: 500)); // 改行時間
       if (_scrollController.hasClients) {
         await _scrollController.animateTo(
           _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 500), // 改行移動時間
           curve: Curves.easeOut,
         );
       }
 
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future.delayed(const Duration(milliseconds: 100)); // 100
       _animateText();
       return;
     }
@@ -115,7 +116,7 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
       );
     }
 
-    await Future.delayed(const Duration(milliseconds: 50));
+    await Future.delayed(const Duration(milliseconds: 40)); // 50 文字間隔
     _animateText();
   }
 
@@ -135,8 +136,8 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
     // 利用可能な幅と高さを計算
     //final availableWidth = screenSize.width - (70 + lk * 2);
     final availableWidth = widget.contentWidth - webk;
-    //final availableHeight = widget.contentHeight - 180; // 上下のパディングを考慮
-    final availableHeight = widget.contentHeight; // 上下のパディングを考慮
+    final availableHeight = widget.contentHeight - 380; // 上下のパディングを考慮
+    //final availableHeight = widget.contentHeight; // 上下のパディングを考慮
 
     // 最大文字数を取得
     final maxLength = content.fold<int>(

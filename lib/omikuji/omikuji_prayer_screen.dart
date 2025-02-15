@@ -49,7 +49,7 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
     // 中心から上部への移動
     _positionAnimation = Tween<Offset>(
       begin: const Offset(0.0, 0.0),
-      end: const Offset(0.0, -0.3),
+      end: const Offset(0.0, -0.4),
     ).animate(CurvedAnimation(
       parent: _moveController,
       curve: Curves.easeOut,
@@ -130,8 +130,8 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
 
         // データ取得
         final omikujiService = OmikujiService();
-        final result = await omikujiService.selectOmikujiByTiming(
-            DateTime.now());
+        final result =
+            await omikujiService.selectOmikujiByTiming(DateTime.now());
 
         if (mounted) Navigator.pop(context);
 
@@ -140,6 +140,7 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
             context: context,
             isScrollControlled: true,
             backgroundColor: Colors.transparent,
+            barrierColor: Colors.transparent,  // 背景を透明に設定
             transitionAnimationController: AnimationController(
               duration: const Duration(milliseconds: 500),
               vsync: Navigator.of(context),
@@ -166,108 +167,105 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
   }
 //}
 
-@override
-Widget build(BuildContext context) {
-  // buildメソッドをクラス内に移動
-  return Scaffold(
-    backgroundColor: Colors.black,
-    body: Stack(
-      children: [
-        // 光彩アニメーション
-        Center(
-          child: AnimatedBuilder(
-            animation: Listenable.merge([
-              _scaleController,
-              _rotationController,
-              _pulseController,
-              _moveController,
-            ]),
-            builder: (context, child) {
-              final scale = _isMoving ?
-              (100.0 / 300.0) * _pulseAnimation.value :
-              _scaleAnimation.value * _pulseAnimation.value / 300;
+  @override
+  Widget build(BuildContext context) {
+    // buildメソッドをクラス内に移動
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Stack(
+        children: [
+          // 光彩アニメーション
+          Center(
+            child: AnimatedBuilder(
+              animation: Listenable.merge([
+                _scaleController,
+                _rotationController,
+                _pulseController,
+                _moveController,
+              ]),
+              builder: (context, child) {
+                final scale = _isMoving
+                    ? (300.0 / 400.0) * _pulseAnimation.value
+                    : _scaleAnimation.value * _pulseAnimation.value / 300;
 
-              return Transform.translate(
-                offset: _positionAnimation.value * MediaQuery
-                    .of(context)
-                    .size
-                    .height,
-                child: Transform(
-                  alignment: Alignment.center,
-                  transform: Matrix4.identity()
-                    ..scale(scale)
-                    ..rotateZ(_rotationController.value * 2 * pi),
-                  child: SizedBox(
-                    width: 300,
-                    height: 300,
-                    child: Image.asset(
-                      'assets/images/omikuji/光彩.jpg',
-                      fit: BoxFit.cover,
+                return Transform.translate(
+                  offset: _positionAnimation.value *
+                      MediaQuery.of(context).size.height,
+                  child: Transform(
+                    alignment: Alignment.center,
+                    transform: Matrix4.identity()
+                      ..scale(scale)
+                      ..rotateZ(_rotationController.value * 2 * pi),
+                    child: SizedBox(
+                      width: 400,
+                      height: 400,
+                      child: Image.asset(
+                        'assets/images/omikuji/光彩.jpg',
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
-        ),
-        // 下部のボタン配置
-        Positioned(
-          left: 0,
-          right: 0,
-          bottom: 20,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // 左側：祈ってください/おみくじを引くボタン
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 500),
-                  child: _showOmikujiButton
-                      ? ElevatedButton(
+          // 下部のボタン配置
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 20,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  // 左側：祈ってください/おみくじを引くボタン
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 500),
+                    child: _showOmikujiButton
+                        ? ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue,
+                            ),
+                            onPressed: _onOmikujiTap,
+                            child: const Text(
+                              'おみくじを引く',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          )
+                        : const Text(
+                            '祈ってください',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                            ),
+                          ),
+                  ),
+                  // 右側：戻るボタン
+                  ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
+                      backgroundColor: Colors.tealAccent,
                     ),
-                    onPressed: _onOmikujiTap,
+                    onPressed: () => Navigator.pop(context, false),
                     child: const Text(
-                      'おみくじを引く',
+                      '戻る',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: Colors.black,
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
                     ),
-                  )
-                      : const Text(
-                    '祈ってください',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                    ),
                   ),
-                ),
-                // 右側：戻るボタン
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.tealAccent,
-                  ),
-                  onPressed: () => Navigator.pop(context, false),
-                  child: const Text(
-                    '戻る',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
-      ],
-    ),
-  );
-} // buildメソッドの終わり
-
+        ],
+      ),
+    );
+  } // buildメソッドの終わり
 } // クラスの終わり

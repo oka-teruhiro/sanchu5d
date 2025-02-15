@@ -17,7 +17,8 @@ class OmikujiBottomSheet extends StatefulWidget {
 }
 
 class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
-    with TickerProviderStateMixin {  // ２つのアニメーション
+    with TickerProviderStateMixin {
+  // ２つのアニメーション
   // アニメーションに必要なミックスイン
 
   late AnimationController _controller; // アニメーションのコントローラー
@@ -32,14 +33,13 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
   //late Animation<double> _rotationAnimation;
 
   late AnimationController _pulseController;
-  late AnimationController _moveController;  // 移動アニメーション用
+  late AnimationController _moveController; // 移動アニメーション用
   late Animation<double> _pulseAnimation;
-  late Animation<double> _moveAnimation;     // 移動用
+  late Animation<double> _moveAnimation; // 移動用
   late Animation<Offset> _positionAnimation; // 位置移動用
   bool _isTypingText = false;
 
   final Random _random = Random(); // 光彩アニメーション用
-
 
   @override
   void initState() {
@@ -59,8 +59,8 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
 
     // 中央から上部への移動
     _positionAnimation = Tween<Offset>(
-      begin: const Offset(0.0, 0.0),    // 画面中央
-      end: const Offset(0.0, -0.3),     // 画面上部（調整可能）
+      begin: const Offset(0.0, 0.0), // 画面中央
+      end: const Offset(0.0, -0.3), // 画面上部（調整可能）
     ).animate(_moveAnimation);
 
     // コントローラーの設定
@@ -157,14 +157,14 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
     });*/
 
     // アニメーション開始
-    _controller.forward();//Todo:
+    _controller.forward(); //Todo:
   }
 
   // 文字表示時のコールバック
   void _onCharacterDisplay() {
     if (mounted) {
       setState(() {
-        _isTypingText = true;  // フラグ設定を追加
+        _isTypingText = true; // フラグ設定を追加
         _currentScaleX = 1.0 + (_random.nextDouble() * 0.2 - 0.1);
         _currentScaleY = _currentScaleX;
         //_currentScaleY = 1.0 + (_random.nextDouble() * 0.4 - 0.2);
@@ -181,7 +181,6 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
     }
   }
 
-
   // 光彩画像のビルド部分を修正
   Widget _buildKosaiImage() {
     return AnimatedBuilder(
@@ -192,7 +191,8 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
       ]),
       builder: (context, child) {
         return Transform.translate(
-          offset: Offset(0, _positionAnimation.value.dy * MediaQuery.of(context).size.height),
+          offset: Offset(0,
+              _positionAnimation.value.dy * MediaQuery.of(context).size.height),
           child: Container(
             width: 100,
             height: 100,
@@ -200,11 +200,9 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
             child: Transform(
               alignment: Alignment.center,
               transform: Matrix4.identity()
-                ..scale(
-                    _isTypingText ?
-                    _pulseAnimation.value * _currentScaleX :
-                    _pulseAnimation.value
-                )
+                ..scale(_isTypingText
+                    ? _pulseAnimation.value * _currentScaleX
+                    : _pulseAnimation.value)
                 ..rotateZ(_rotationController.value * 2 * pi),
               child: Container(
                 decoration: BoxDecoration(
@@ -232,18 +230,13 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
 
   @override
   Widget build(BuildContext context) {
-    double w0 = MediaQuery
-        .of(context)
-        .size
-        .width;
-    double h0 = MediaQuery
-        .of(context)
-        .size
-        .height;
+    double w0 = MediaQuery.of(context).size.width;
+    double h0 = MediaQuery.of(context).size.height;
     double hTop = 24; // 80
-    double hBottom = 56;
+    double hBottom = 56; // 戻るボタンエリヤの高さ
     double wKazari = 50; //飾り枠pad幅
     double h1 = h0 - hTop;
+    double h2 = 100; // 光彩のぞき窓の高さ
 
     return SizeTransition(
       // サイズ変更アニメーション
@@ -251,9 +244,9 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
       axis: Axis.vertical,
       child: SizedBox(
         width: w0,
-        height: h1,
+        height: h1 - h2, // おみくじシートの高さ
         child: Container(
-          color: Colors.black.withOpacity(0.2), // todo:
+          color: Colors.teal.withAlpha(50), // おみくじシートに色をつけ透かす
           child: Stack(
             children: [
               // 光彩画像のレイヤー
@@ -265,7 +258,7 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
               ),
               // 飾り枠のレイヤー
               Transform.translate(
-                offset: const Offset(0, 100),
+                offset: const Offset(0, 0),
                 child: Column(
                   children: [
                     AnimatedBuilder(
@@ -273,7 +266,7 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
                       builder: (context, child) {
                         return CustomPaint(
                           painter: BorderPainter(_pathAnimation.value),
-                          size: Size(w0, h1 - 100),
+                          size: Size(w0, h1 - h2 - hBottom), // 飾り枠の高さ決める
                         );
                       },
                     ),
@@ -291,43 +284,45 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
                         padding: EdgeInsets.all(wKazari),
                         child: OmikujiContentWidget(
                           omikuji: widget.omikuji,
-                          contentHeight: h0 - hTop - hBottom - wKazari * 2 -
-                              100 - 66,
+                          contentHeight:
+                              h0 - hTop - hBottom - wKazari * 2 - 100 - 66,
                           contentWidth: w0 - wKazari * 2,
                           canStartAnimation: _canStartTextAnimation,
                           // フラグを渡す
                           onCharacterDisplay: _onCharacterDisplay, // コールバックを追加
-                          onLineComplete: _onLineComplete,  // 追加
+                          onLineComplete: _onLineComplete, // 追加
                         ),
                       ),
                     ),
-
                   ],
                 ),
               ),
               // 戻るボタン
               Transform.translate(
-                offset: Offset(0, h1 - 60),
+                offset: Offset(0, h1 - h2 - hBottom),
                 child: SizedBox(
-                  height: 60,
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.tealAccent,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 40,
-                            vertical: 8,
+                  height: hBottom,
+                  child: Container(
+                    color: Colors.black,
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.tealAccent,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 40,
+                              vertical: 8,
+                            ),
                           ),
-                        ),
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text(
-                          '戻る',
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text(
+                            '戻る',
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
@@ -349,15 +344,14 @@ class BorderPainter extends CustomPainter {
 
   BorderPainter(this.progress)
       : _paint = Paint()
-    ..color = const Color(0xFF64FFDA)
-    ..strokeWidth = 2
-    ..style = PaintingStyle.stroke;
+          ..color = const Color(0xFF64FFDA)
+          ..strokeWidth = 2
+          ..style = PaintingStyle.stroke;
 
   @override
   void paint(Canvas canvas, Size size) {
     double w0 = size.width;
     double h1 = size.height;
-    double h2 = 56;
 
     var path = Path();
     path.moveTo(10, 100);
@@ -387,32 +381,32 @@ class BorderPainter extends CustomPainter {
     path.lineTo(w0 - 30, 10);
     path.lineTo(w0 - 30, 50);
     path.lineTo(w0 - 10, 50);
-    path.lineTo(w0 - 10, h1 - 50 - h2);
-    path.lineTo(w0 - 30, h1 - 50 - h2);
-    path.lineTo(w0 - 30, h1 - 10 - h2);
-    path.lineTo(w0 - 40, h1 - 10 - h2);
-    path.lineTo(w0 - 40, h1 - 20 - h2);
-    path.lineTo(w0 - 10, h1 - 20 - h2);
-    path.lineTo(w0 - 10, h1 - 10 - h2);
-    path.lineTo(w0 - 20, h1 - 10 - h2);
-    path.lineTo(w0 - 20, h1 - 40 - h2);
-    path.lineTo(w0 - 10, h1 - 40 - h2);
-    path.lineTo(w0 - 10, h1 - 30 - h2);
-    path.lineTo(w0 - 50, h1 - 30 - h2);
-    path.lineTo(w0 - 50, h1 - 10 - h2);
-    path.lineTo(50, h1 - 10 - h2);
-    path.lineTo(50, h1 - 30 - h2);
-    path.lineTo(10, h1 - 30 - h2);
-    path.lineTo(10, h1 - 40 - h2);
-    path.lineTo(20, h1 - 40 - h2);
-    path.lineTo(20, h1 - 10 - h2);
-    path.lineTo(10, h1 - 10 - h2);
-    path.lineTo(10, h1 - 20 - h2);
-    path.lineTo(40, h1 - 20 - h2);
-    path.lineTo(40, h1 - 10 - h2);
-    path.lineTo(30, h1 - 10 - h2);
-    path.lineTo(30, h1 - 50 - h2);
-    path.lineTo(10, h1 - 50 - h2);
+    path.lineTo(w0 - 10, h1 - 50 );
+    path.lineTo(w0 - 30, h1 - 50 );
+    path.lineTo(w0 - 30, h1 - 10 );
+    path.lineTo(w0 - 40, h1 - 10 );
+    path.lineTo(w0 - 40, h1 - 20 );
+    path.lineTo(w0 - 10, h1 - 20 );
+    path.lineTo(w0 - 10, h1 - 10 );
+    path.lineTo(w0 - 20, h1 - 10 );
+    path.lineTo(w0 - 20, h1 - 40 );
+    path.lineTo(w0 - 10, h1 - 40 );
+    path.lineTo(w0 - 10, h1 - 30 );
+    path.lineTo(w0 - 50, h1 - 30 );
+    path.lineTo(w0 - 50, h1 - 10 );
+    path.lineTo(50, h1 - 10 );
+    path.lineTo(50, h1 - 30 );
+    path.lineTo(10, h1 - 30 );
+    path.lineTo(10, h1 - 40 );
+    path.lineTo(20, h1 - 40 );
+    path.lineTo(20, h1 - 10 );
+    path.lineTo(10, h1 - 10 );
+    path.lineTo(10, h1 - 20 );
+    path.lineTo(40, h1 - 20 );
+    path.lineTo(40, h1 - 10 );
+    path.lineTo(30, h1 - 10 );
+    path.lineTo(30, h1 - 50 );
+    path.lineTo(10, h1 - 50 );
     path.lineTo(10, 100);
 
     PathMetrics pathMetrics = path.computeMetrics();

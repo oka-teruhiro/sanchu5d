@@ -29,7 +29,6 @@ class _OmikujiPageState extends State<OmikujiPage> {
     _pageLoadTime = DateTime.now(); // ページ表示時刻を記録
   }
 
-
   void _togglePanel(int index) {
     setState(() {
       _listExpanded[index] = !_listExpanded[index];
@@ -314,6 +313,7 @@ class _OmikujiPageState extends State<OmikujiPage> {
           context: context,
           isScrollControlled: true,
           backgroundColor: Colors.transparent,
+          barrierColor: Colors.transparent,  // 背景を透明に設定
           transitionAnimationController: AnimationController(
             duration: const Duration(milliseconds: 500),
             vsync: Navigator.of(context),
