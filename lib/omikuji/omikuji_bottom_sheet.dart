@@ -276,7 +276,7 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
 
               // メインコンテンツ領域
               Transform.translate(
-                offset: const Offset(0, 100),
+                offset: const Offset(0, 0),
                 child: Column(
                   children: [
                     Expanded(
@@ -293,6 +293,9 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
                           onLineComplete: _onLineComplete, // 追加
                         ),
                       ),
+                    ),
+                    SizedBox(
+                      height: hBottom,
                     ),
                   ],
                 ),
