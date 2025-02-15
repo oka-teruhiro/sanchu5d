@@ -84,11 +84,11 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
         } // 追加
       });
 
-      await Future.delayed(const Duration(milliseconds: 500)); // 改行時間
+      await Future.delayed(const Duration(milliseconds: 50)); // 改行時間
       if (_scrollController.hasClients) {
         await _scrollController.animateTo(
           _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 500), // 改行移動時間
+          duration: const Duration(milliseconds: 50), // 改行移動時間
           curve: Curves.easeOut,
         );
       }

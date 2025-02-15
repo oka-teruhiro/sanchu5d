@@ -285,7 +285,8 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
                         child: OmikujiContentWidget(
                           omikuji: widget.omikuji,
                           contentHeight:
-                              h0 - hTop - hBottom - wKazari * 2 - 100 - 66,
+                              //h0 - hTop - hBottom - wKazari * 2 - 100 - 66,
+                              h0 - hTop - h2 - hBottom - wKazari * 2 ,
                           contentWidth: w0 - wKazari * 2,
                           canStartAnimation: _canStartTextAnimation,
                           // フラグを渡す
