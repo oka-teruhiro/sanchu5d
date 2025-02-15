@@ -232,7 +232,7 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
   Widget build(BuildContext context) {
     double w0 = MediaQuery.of(context).size.width;
     double h0 = MediaQuery.of(context).size.height;
-    double hTop = 24; // 80
+    double hTop = 0; // 80
     double hBottom = 56; // 戻るボタンエリヤの高さ
     double wKazari = 50; //飾り枠pad幅
     double h1 = h0 - hTop;
