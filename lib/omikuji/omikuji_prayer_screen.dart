@@ -169,11 +169,16 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
 
   @override
   Widget build(BuildContext context) {
+    double h0 = MediaQuery.of(context).size.height;
+    double hTop = 0; // 80
+    double hBottom = 56; // 戻るボタンエリヤの高さ
+    double h1 = h0 - hTop;
     // buildメソッドをクラス内に移動
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
         children: [
+
           // 光彩アニメーション
           Center(
             child: AnimatedBuilder(
@@ -210,57 +215,61 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
             ),
           ),
           // 下部のボタン配置
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 20,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  // 左側：祈ってください/おみくじを引くボタン
-                  AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 500),
-                    child: _showOmikujiButton
-                        ? ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
-                            ),
-                            onPressed: _onOmikujiTap,
-                            child: const Text(
-                              'おみくじを引く',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
+          Transform.translate(
+            offset: Offset(0, h1 - hBottom),
+            child: SizedBox(
+              height: hBottom,
+              child: Container(
+                color: Colors.black,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    // 左側：祈ってください/おみくじを引くボタン
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 500),
+                        child: _showOmikujiButton
+                            ? ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue,
+                                ),
+                                onPressed: _onOmikujiTap,
+                                child: const Text(
+                                  'おみくじを引く',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              )
+                            : const Text(
+                                '祈ってください',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                ),
                               ),
-                            ),
-                          )
-                        : const Text(
-                            '祈ってください',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                            ),
-                          ),
-                  ),
-                  // 右側：戻るボタン
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.tealAccent,
-                    ),
-                    onPressed: () => Navigator.pop(context, false),
-                    child: const Text(
-                      '戻る',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
                       ),
                     ),
-                  ),
-                ],
+                    // 右側：戻るボタン
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.tealAccent,
+                      ),
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text(
+                        '戻る',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

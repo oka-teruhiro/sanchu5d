@@ -1,12 +1,6 @@
-//import 'dart:math';
-
-//import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:sanchu5d/omikuji/omikuji_siyouhou.dart';
-
-import 'omikuji_bottom_sheet.dart';
 import 'omikuji_prayer_screen.dart';
-import 'omikuji_service.dart';
 
 class OmikujiPage extends StatefulWidget {
   const OmikujiPage({super.key});
@@ -16,17 +10,15 @@ class OmikujiPage extends StatefulWidget {
 }
 
 class _OmikujiPageState extends State<OmikujiPage> {
-  final OmikujiService _omikujiService = OmikujiService();
+  //final OmikujiService _omikujiService = OmikujiService();
   late final List<bool> _listExpanded = [true, false, false, false, false];
   bool _showPrayButton = true; // 祈りボタンの表示状態を管理
-  //bool _showOmikujiButton = false; // おみくじボタンの表示状態を管理
-  //bool _showInori = false; // 祈り中を管理
-  late final DateTime _pageLoadTime; // ページ表示時刻
+  //late final DateTime _pageLoadTime; // ページ表示時刻
 
   @override
   void initState() {
     super.initState();
-    _pageLoadTime = DateTime.now(); // ページ表示時刻を記録
+    //_pageLoadTime = DateTime.now(); // ページ表示時刻を記録
   }
 
   void _togglePanel(int index) {
@@ -237,6 +229,7 @@ class _OmikujiPageState extends State<OmikujiPage> {
               ),
             ),
             const Divider(
+              height: 1,
               color: Colors.blue,
             ),
             Center(
@@ -249,6 +242,10 @@ class _OmikujiPageState extends State<OmikujiPage> {
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.tealAccent,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 40,
+                            vertical: 8,
+                          ),
                         ),
                         onPressed: _onPrayButtonTapped,
                         child: const Text(
@@ -284,59 +281,5 @@ class _OmikujiPageState extends State<OmikujiPage> {
         ),
       ),
     );
-  }
-
-  // 画面下からおみくじの結果が出てくる
-  void _showOmikuji(BuildContext context) async {
-    try {
-      // ローディング表示
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return const Center(
-            child: CircularProgressIndicator(
-              color: Colors.tealAccent,
-            ),
-          );
-        },
-      );
-
-      // データ取得
-      final result = await _omikujiService.selectOmikujiByTiming(_pageLoadTime);
-
-      if (mounted) Navigator.pop(context);
-      // おみくじ表示
-      if (mounted) {
-        // おみくじ表示
-        showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          backgroundColor: Colors.transparent,
-          barrierColor: Colors.transparent,  // 背景を透明に設定
-          transitionAnimationController: AnimationController(
-            duration: const Duration(milliseconds: 500),
-            vsync: Navigator.of(context),
-          ),
-          // 画面遷移を維持したまま表示
-          routeSettings: const RouteSettings(name: '/omikuji_result'),
-          builder: (BuildContext context) {
-            return OmikujiBottomSheet(
-              omikuji: result['data'],
-            );
-          },
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        Navigator.of(context).popUntil((route) => route.isFirst);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString()),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
   }
 }

@@ -26,8 +26,8 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
   late Animation<double> _pathAnimation; // パス描画用
   bool _canStartTextAnimation = false; // テキストアニメーション開始フラグ
   // 光彩アニメーション用の変数を追加
-  double _currentScaleX = 1.0;
-  double _currentScaleY = 1.0;
+  double _currentScale = 1.0;
+  //double _currentScaleY = 1.0;
   // 回転用のアニメーションコントローラーを追加
   late AnimationController _rotationController;
   //late Animation<double> _rotationAnimation;
@@ -130,8 +130,8 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
     if (mounted) {
       setState(() {
         _isTypingText = true; // フラグ設定を追加
-        _currentScaleX = 1.0 + (_random.nextDouble() * 0.2 - 0.1);
-        _currentScaleY = _currentScaleX;
+        _currentScale = 1.0 + (_random.nextDouble() * 0.2 - 0.1);
+        //_currentScaleY = _currentScaleX;
         //_currentScaleY = 1.0 + (_random.nextDouble() * 0.4 - 0.2);
       });
     }
@@ -166,7 +166,7 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
               alignment: Alignment.center,
               transform: Matrix4.identity()
                 ..scale(_isTypingText
-                    ? _pulseAnimation.value * _currentScaleX
+                    ? _pulseAnimation.value * _currentScale
                     : _pulseAnimation.value)
                 ..rotateZ(_rotationController.value * 2 * pi),
               child: Container(
@@ -290,7 +290,7 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
                           child: const Text(
                             '戻る',
                             style: TextStyle(
-                              fontSize: 20,
+                              fontSize: 16,
                               color: Colors.black,
                               fontWeight: FontWeight.bold,
                             ),

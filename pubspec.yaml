@@ -36,6 +36,7 @@ dev_dependencies:
     sdk: flutter
   #flutter_lints: ^2.0.0
   flutter_native_splash: ^2.4.1
+  flutter_lints: ^5.0.0
 flutter_native_splash:
   image: "assets/images/icon/icon_uranai_x1024.png"
   color: "#000000"
