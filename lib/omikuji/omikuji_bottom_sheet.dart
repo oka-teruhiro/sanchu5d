@@ -250,7 +250,7 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
                   children: [
                     SizedBox(
                       child: Container(
-                        color: Colors.deepOrangeAccent,
+                        //color: Colors.deepOrangeAccent, //todo:
                         child: OmikujiContentWidget(
                             omikuji: widget.omikuji ,
                             contentHeight: h5,
@@ -274,7 +274,7 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
                 child: SizedBox(
                   height: hBottom,
                   child: Container(
-                    color: Colors.blueAccent,
+                    color: Colors.black,
                     child: Center(
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),

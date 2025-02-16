@@ -33,20 +33,6 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
   bool _isAnimationComplete = false;
   bool _hasStartedAnimation = false; // アニメーション開始状態の追跡
 
-  //final content = List<String>.from(widgetFactory.omikuji['content']);
-
-  /*@override
-  void initState() {
-    super.initState();
-    _startAnimation();
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }*/
-
   @override
   void didUpdateWidget(OmikujiContentWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -132,58 +118,67 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
     } else {
       webk = 0; // Android用
     }
+    double verticalPadding = 0;
 
     // 利用可能な幅と高さを計算
-    //final availableWidth = screenSize.width - (70 + lk * 2);
     final availableWidth = widget.contentWidth - webk;
-    final availableHeight = widget.contentHeight - 380; // 上下のパディングを考慮
-    //final availableHeight = widget.contentHeight; // 上下のパディングを考慮
+    final availableHeight = widget.contentHeight; // 上下のパディングを考慮
 
     // 最大文字数を取得
     final maxLength = content.fold<int>(
       0,
       (maxLen, line) => line.length > maxLen ? line.length : maxLen,
     );
-    //print('availableWidth:$availableWidth');
-    //print('maxLength:$maxLength');
     // フォントサイズを計算
     final calculatedFontSize = (availableWidth / maxLength) * 1.0; // 係数を1.0に調整
     final baseFontSize = calculatedFontSize.clamp(13.0, 60.0);
-    //print('fontSize:$baseFontSize・$calculatedFontSize');
 
     // 1行の高さを計算（フォントサイズ + 行間）
     final lineHeight = baseFontSize * (1 + gk);
 
     // 最大表示可能行数を計算
-    final maxVisibleLines = (availableHeight / lineHeight).floor();
+    //final maxVisibleLines = (availableHeight / lineHeight).floor();
 
     // 全行数
     final totalLines = content.length;
 
-    // 上下の余白を計算
-    final double verticalPadding = totalLines <= maxVisibleLines
-        ? (availableHeight - (totalLines * lineHeight)) / 2 // 中央寄せの場合の余白
-        : 0; // スクロールが必要な場合は余白なし
+    final double hPadTop = ((availableHeight -
+                ((totalLines * baseFontSize) +
+                    ((totalLines - 1) * baseFontSize * gk))) /
+            2) -
+        (lineHeight / 2);
 
-    /*// デバッグ出力
-    print('Screen width: ${screenSize.width}');
+    if (hPadTop > 0) {
+      verticalPadding = hPadTop;
+    } else {
+      verticalPadding = 0;
+    }
+
+    // 上下の余白を計算
+    //final double verticalPadding = totalLines <= maxVisibleLines
+    //    ? (availableHeight - (totalLines * lineHeight)) / 2 // 中央寄せの場合の余白
+    //   : 0; // スクロールが必要な場合は余白なし
+
+    // デバッグ出力
+    //print('Screen width: ${screenSize.width}');
     print('Available width: $availableWidth');
     print('Available height: $availableHeight');
     print('Available height: $availableHeight');
     print('Max length: $maxLength');
     print('Font size: $baseFontSize');
-    print('Line height: $lineHeight');
-    print('Max visible lines: $maxVisibleLines');
+    //print('Line height: $lineHeight');
+    //print('Max visible lines: $maxVisibleLines');
     print('Total lines: $totalLines');
-    print('Vertical padding: $verticalPadding');*/
+    print('Vertical padding: $verticalPadding');
+    print('hPadTop: $hPadTop');
 
     return LayoutBuilder(
       builder: (context, constraints) {
         return SingleChildScrollView(
           controller: _scrollController,
           physics: _isAnimationComplete
-              ? const AlwaysScrollableScrollPhysics()
-              : const NeverScrollableScrollPhysics(),
+              ? AlwaysScrollableScrollPhysics()
+              : NeverScrollableScrollPhysics(),
           child: Container(
             constraints: BoxConstraints(
               minHeight: constraints.maxHeight,
@@ -193,10 +188,13 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
               // Stackを使用して左余白を固定
               children: [
                 Padding(
-                  padding:
-                      EdgeInsets.only(left: 0, right: 0, top: verticalPadding),
+                  padding: EdgeInsets.only(
+                    left: 0,
+                    right: 0,
+                    top: verticalPadding,
+                  ),
                   child: Container(
-                    color: Colors.black12,
+                    //color: Colors.blue, // todo:
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -231,7 +229,7 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
                     ),
                   ),
                 ),
-                SizedBox(height: verticalPadding),
+                //SizedBox(height: verticalPadding),
               ],
             ),
           ),
