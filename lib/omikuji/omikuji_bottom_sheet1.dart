@@ -113,13 +113,48 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
       });
     });
 
+    /*_rotationAnimation = Tween<double>(
+      begin: 0,
+      end: 2 * 3.14159, // 2π (1回転)
+    ).animate(_rotationController);*/
+
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         setState(() {
           _canStartTextAnimation = true;
+          // スライドアニメーション完了時に回転を開始
+          //_rotationController.repeat();
         });
       }
     });
+/*
+    // 新しい伸縮アニメーションを追加
+    _scaleXAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.0,
+    ).animate(_controller);
+
+    _scaleYAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.0,
+    ).animate(_controller);
+
+    // テキストアニメーションのタイミングで伸縮を更新
+    _controller.addListener(() {
+      if (_canStartTextAnimation) {
+        setState(() {
+          _scaleXAnimation = Tween<double>(
+            begin: 1.0,
+            end: 1.0 + (_random.nextDouble() * 0.1 - 0.05), // ±5%のランダムな伸縮
+          ).animate(_controller);
+
+          _scaleYAnimation = Tween<double>(
+            begin: 1.0,
+            end: 1.0 + (_random.nextDouble() * 0.1 - 0.05), // ±5%のランダムな伸縮
+          ).animate(_controller);
+        });
+      }
+    });*/
 
     // アニメーション開始
     _controller.forward(); //Todo:
@@ -202,8 +237,6 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
     double wKazari = 50; //飾り枠pad幅
     double h1 = h0 - hTop;
     double h2 = 100; // 光彩のぞき窓の高さ
-    double h5 = h0 - hTop - h2 - hBottom - (wKazari * 2);
-    double w5 = w0 - (wKazari * 2);
 
     return SizeTransition(
       // サイズ変更アニメーション
@@ -216,7 +249,6 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
           color: Colors.black.withAlpha(150), // おみくじシートに色をつけ透かす
           child: Stack(
             children: [
-
               // 光彩画像のレイヤー
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -224,7 +256,6 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
                   _buildKosaiImage(),
                 ],
               ),
-
               // 飾り枠のレイヤー
               Transform.translate(
                 offset: const Offset(0, 0),
@@ -245,36 +276,38 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
 
               // メインコンテンツ領域
               Transform.translate(
-                offset: Offset(wKazari, wKazari),
+                offset: const Offset(0, 0),
                 child: Column(
                   children: [
-                    SizedBox(
-                      child: Container(
-                        color: Colors.deepOrangeAccent,
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.all(wKazari),
                         child: OmikujiContentWidget(
-                            omikuji: widget.omikuji ,
-                            contentHeight: h5,
-                            contentWidth: w5,
-                            canStartAnimation: _canStartTextAnimation,
+                          omikuji: widget.omikuji,
+                          contentHeight:
+                              //h0 - hTop - hBottom - wKazari * 2 - 100 - 66,
+                              h0 - hTop - h2 - hBottom - wKazari * 2 ,
+                          contentWidth: w0 - wKazari * 2,
+                          canStartAnimation: _canStartTextAnimation,
                           // フラグを渡す
                           onCharacterDisplay: _onCharacterDisplay, // コールバックを追加
                           onLineComplete: _onLineComplete, // 追加
                         ),
                       ),
-                      height: h5,
-                      width: w5,
+                    ),
+                    SizedBox(
+                      height: hBottom,
                     ),
                   ],
                 ),
               ),
-
               // 戻るボタン
               Transform.translate(
                 offset: Offset(0, h1 - h2 - hBottom),
                 child: SizedBox(
                   height: hBottom,
                   child: Container(
-                    color: Colors.blueAccent,
+                    color: Colors.black,
                     child: Center(
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
