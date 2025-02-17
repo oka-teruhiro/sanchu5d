@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
-
 import 'omikuji_bottom_sheet.dart';
 import 'omikuji_service.dart';
 
@@ -211,7 +210,9 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
               builder: (context, child) {
                 final baseScale = _isTyping
                     ? _typingScale
-                    : (_isMoving ? (300.0 / 400.0) : 1.0);
+                    : (_isMoving
+                      ? (300.0 / 400.0)
+                      : _scaleAnimation.value / 300.0);  // 初期アニメーションを適用
 
                 final scale = baseScale * _pulseAnimation.value;
 

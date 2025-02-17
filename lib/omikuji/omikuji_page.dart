@@ -10,15 +10,12 @@ class OmikujiPage extends StatefulWidget {
 }
 
 class _OmikujiPageState extends State<OmikujiPage> {
-  //final OmikujiService _omikujiService = OmikujiService();
   late final List<bool> _listExpanded = [true, false, false, false, false];
   bool _showPrayButton = true; // 祈りボタンの表示状態を管理
-  //late final DateTime _pageLoadTime; // ページ表示時刻
 
   @override
   void initState() {
     super.initState();
-    //_pageLoadTime = DateTime.now(); // ページ表示時刻を記録
   }
 
   void _togglePanel(int index) {

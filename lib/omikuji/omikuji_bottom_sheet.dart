@@ -6,14 +6,14 @@ import 'omikuji_content_widget.dart';
 // 画面下からおみくじの結果が出てくる
 class OmikujiBottomSheet extends StatefulWidget {
   final Map<String, dynamic> omikuji;
-  final VoidCallback? onCharacterDisplay;  // 追加
-  final VoidCallback? onLineComplete;      // 追加
+  final VoidCallback? onCharacterDisplay; // 追加
+  final VoidCallback? onLineComplete; // 追加
 
   const OmikujiBottomSheet({
     Key? key,
     required this.omikuji,
-    this.onCharacterDisplay,   // 追加
-    this.onLineComplete,       // 追加
+    this.onCharacterDisplay, // 追加
+    this.onLineComplete, // 追加
   }) : super(key: key);
 
   @override
@@ -29,43 +29,10 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
   late Animation<double> _slideAnimation; // スライドアップ用
   late Animation<double> _pathAnimation; // パス描画用
   bool _canStartTextAnimation = false; // テキストアニメーション開始フラグ
-  // 光彩アニメーション用の変数を追加
-  double _currentScale = 1.0;
-  //double _currentScaleY = 1.0;
-  // 回転用のアニメーションコントローラーを追加
-  late AnimationController _rotationController;
-  //late Animation<double> _rotationAnimation;
-
-  late AnimationController _pulseController;
-  late AnimationController _moveController; // 移動アニメーション用
-  late Animation<double> _pulseAnimation;
-  late Animation<double> _moveAnimation; // 移動用
-  late Animation<Offset> _positionAnimation; // 位置移動用
-  bool _isTypingText = false;
-
-  final Random _random = Random(); // 光彩アニメーション用
 
   @override
   void initState() {
     super.initState();
-
-    // 移動アニメーション (0.5秒)
-    _moveController = AnimationController(
-      duration: const Duration(milliseconds: 500),
-      vsync: this,
-    );
-
-    // イージングを使用して最初は早く、最後はゆっくりに
-    _moveAnimation = CurvedAnimation(
-      parent: _moveController,
-      curve: Curves.easeOut,
-    );
-
-    // 中央から上部への移動
-    _positionAnimation = Tween<Offset>(
-      begin: const Offset(0.0, 0.0), // 画面中央
-      end: const Offset(0.0, -0.3), // 画面上部（調整可能）
-    ).animate(_moveAnimation);
 
     // コントローラーの設定
     _controller = AnimationController(
@@ -88,35 +55,6 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
       curve: const Interval(0.2, 1.0, curve: Curves.linear),
     ));
 
-    // 10秒周期の脈動アニメーション
-    _pulseController = AnimationController(
-      duration: const Duration(seconds: 6),
-      vsync: this,
-    );
-
-    _pulseAnimation = Tween<double>(
-      begin: 1.0,
-      end: 0.6,
-    ).animate(CurvedAnimation(
-      parent: _pulseController,
-      curve: Curves.easeInOut,
-    ));
-
-    // 回転アニメーションの設定を追加
-    _rotationController = AnimationController(
-      duration: const Duration(seconds: 60), // 1回転の時間
-      vsync: this,
-    ); // 継続的な回転
-
-    // アニメーション順序の制御
-    _moveController.forward().then((_) {
-      Future.delayed(const Duration(milliseconds: 100), () {
-        _controller.forward();
-        _pulseController.repeat(reverse: true);
-        _rotationController.repeat();
-      });
-    });
-
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         setState(() {
@@ -126,86 +64,12 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
     });
 
     // アニメーション開始
-    _controller.forward(); //Todo:
-  }
-
-  // 文字表示時のコールバック
-  void _onCharacterDisplay() {
-    if (mounted) {
-      setState(() {
-        _isTypingText = true; // フラグ設定を追加
-        _currentScale = 1.0 + (_random.nextDouble() * 0.5);
-        //print('New scale: $_currentScale'); // デバッグ出力を追加
-        //_currentScaleY = _currentScaleX;
-        //_currentScaleY = 1.0 + (_random.nextDouble() * 0.4 - 0.2);
-      });
-      // 親ウィジェットのコールバックを呼び出す
-      widget.onCharacterDisplay?.call();
-    }
-  }
-
-  // 行の表示が終わった時の処理を追加
-  void _onLineComplete() {
-    if (mounted) {
-      setState(() {
-        _isTypingText = false;
-        _currentScale = 1.0;  // スケールもリセット
-        //print('Reset scale on line complete'); // デバッグ出力
-      });
-    // 親ウィジェットのコールバックを呼び出す
-    widget.onLineComplete?.call();
-    }
-  }
-
-  // 光彩画像のビルド部分を修正
-  Widget _buildKosaiImage() {
-    return AnimatedBuilder(
-      animation: Listenable.merge([
-        _moveController,
-        _pulseController,
-        _rotationController,
-      ]),
-      builder: (context, child) {
-        // スケール値をデバッグ出力
-        print('Current scale in build: ${_isTypingText ? _currentScale : 1.0}');
-
-        return Transform.translate(
-          offset: Offset(0,
-              _positionAnimation.value.dy * MediaQuery.of(context).size.height),
-          child: Container(
-            width: 100,
-            height: 100,
-            alignment: Alignment.center,
-            child: Transform(
-              alignment: Alignment.center,
-              transform: Matrix4.identity()
-              // スケーリング方法を変更
-                ..scale(
-                  _isTypingText ? _currentScale : 1.0,
-                  _isTypingText ? _currentScale : 1.0,
-                )
-                ..rotateZ(_rotationController.value * 2 * pi),
-              child: Container(
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('assets/images/omikuji/光彩.jpg'),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
+    _controller.forward();
   }
 
   @override
   void dispose() {
     _controller.dispose(); // コントローラーの破棄
-    _rotationController.dispose(); // 回転コントローラーの破棄を追加
-    _pulseController.dispose();
-    _moveController.dispose();
     super.dispose();
   }
 
@@ -232,15 +96,6 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
           color: Colors.black.withAlpha(150), // おみくじシートに色をつけ透かす
           child: Stack(
             children: [
-
-              // 光彩画像のレイヤー
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  _buildKosaiImage(),
-                ],
-              ),
-
               // 飾り枠のレイヤー
               Transform.translate(
                 offset: const Offset(0, 0),
@@ -265,20 +120,18 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
                 child: Column(
                   children: [
                     SizedBox(
-                      child: Container(
-                        //color: Colors.deepOrangeAccent, //todo:
-                        child: OmikujiContentWidget(
-                            omikuji: widget.omikuji ,
-                            contentHeight: h5,
-                            contentWidth: w5,
-                            canStartAnimation: _canStartTextAnimation,
-                          // フラグを渡す
-                          onCharacterDisplay: _onCharacterDisplay, // コールバックを追加
-                          onLineComplete: _onLineComplete, // 追加
-                        ),
-                      ),
                       height: h5,
                       width: w5,
+                      child: OmikujiContentWidget(
+                        omikuji: widget.omikuji,
+                        contentHeight: h5,
+                        contentWidth: w5,
+                        canStartAnimation: _canStartTextAnimation,
+                        // フラグを渡す
+                        onCharacterDisplay: widget.onCharacterDisplay,
+                        // コールバックを追加
+                        onLineComplete: widget.onLineComplete , // 追加
+                      ),
                     ),
                   ],
                 ),
@@ -368,32 +221,32 @@ class BorderPainter extends CustomPainter {
     path.lineTo(w0 - 30, 10);
     path.lineTo(w0 - 30, 50);
     path.lineTo(w0 - 10, 50);
-    path.lineTo(w0 - 10, h1 - 50 );
-    path.lineTo(w0 - 30, h1 - 50 );
-    path.lineTo(w0 - 30, h1 - 10 );
-    path.lineTo(w0 - 40, h1 - 10 );
-    path.lineTo(w0 - 40, h1 - 20 );
-    path.lineTo(w0 - 10, h1 - 20 );
-    path.lineTo(w0 - 10, h1 - 10 );
-    path.lineTo(w0 - 20, h1 - 10 );
-    path.lineTo(w0 - 20, h1 - 40 );
-    path.lineTo(w0 - 10, h1 - 40 );
-    path.lineTo(w0 - 10, h1 - 30 );
-    path.lineTo(w0 - 50, h1 - 30 );
-    path.lineTo(w0 - 50, h1 - 10 );
-    path.lineTo(50, h1 - 10 );
-    path.lineTo(50, h1 - 30 );
-    path.lineTo(10, h1 - 30 );
-    path.lineTo(10, h1 - 40 );
-    path.lineTo(20, h1 - 40 );
-    path.lineTo(20, h1 - 10 );
-    path.lineTo(10, h1 - 10 );
-    path.lineTo(10, h1 - 20 );
-    path.lineTo(40, h1 - 20 );
-    path.lineTo(40, h1 - 10 );
-    path.lineTo(30, h1 - 10 );
-    path.lineTo(30, h1 - 50 );
-    path.lineTo(10, h1 - 50 );
+    path.lineTo(w0 - 10, h1 - 50);
+    path.lineTo(w0 - 30, h1 - 50);
+    path.lineTo(w0 - 30, h1 - 10);
+    path.lineTo(w0 - 40, h1 - 10);
+    path.lineTo(w0 - 40, h1 - 20);
+    path.lineTo(w0 - 10, h1 - 20);
+    path.lineTo(w0 - 10, h1 - 10);
+    path.lineTo(w0 - 20, h1 - 10);
+    path.lineTo(w0 - 20, h1 - 40);
+    path.lineTo(w0 - 10, h1 - 40);
+    path.lineTo(w0 - 10, h1 - 30);
+    path.lineTo(w0 - 50, h1 - 30);
+    path.lineTo(w0 - 50, h1 - 10);
+    path.lineTo(50, h1 - 10);
+    path.lineTo(50, h1 - 30);
+    path.lineTo(10, h1 - 30);
+    path.lineTo(10, h1 - 40);
+    path.lineTo(20, h1 - 40);
+    path.lineTo(20, h1 - 10);
+    path.lineTo(10, h1 - 10);
+    path.lineTo(10, h1 - 20);
+    path.lineTo(40, h1 - 20);
+    path.lineTo(40, h1 - 10);
+    path.lineTo(30, h1 - 10);
+    path.lineTo(30, h1 - 50);
+    path.lineTo(10, h1 - 50);
     path.lineTo(10, 100);
 
     PathMetrics pathMetrics = path.computeMetrics();
