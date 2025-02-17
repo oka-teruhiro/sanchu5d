@@ -6,10 +6,14 @@ import 'omikuji_content_widget.dart';
 // 画面下からおみくじの結果が出てくる
 class OmikujiBottomSheet extends StatefulWidget {
   final Map<String, dynamic> omikuji;
+  final VoidCallback? onCharacterDisplay;  // 追加
+  final VoidCallback? onLineComplete;      // 追加
 
   const OmikujiBottomSheet({
     Key? key,
     required this.omikuji,
+    this.onCharacterDisplay,   // 追加
+    this.onLineComplete,       // 追加
   }) : super(key: key);
 
   @override
@@ -130,10 +134,13 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
     if (mounted) {
       setState(() {
         _isTypingText = true; // フラグ設定を追加
-        _currentScale = 1.0 + (_random.nextDouble() * 0.2 - 0.1);
+        _currentScale = 1.0 + (_random.nextDouble() * 0.5);
+        //print('New scale: $_currentScale'); // デバッグ出力を追加
         //_currentScaleY = _currentScaleX;
         //_currentScaleY = 1.0 + (_random.nextDouble() * 0.4 - 0.2);
       });
+      // 親ウィジェットのコールバックを呼び出す
+      widget.onCharacterDisplay?.call();
     }
   }
 
@@ -142,7 +149,11 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
     if (mounted) {
       setState(() {
         _isTypingText = false;
+        _currentScale = 1.0;  // スケールもリセット
+        //print('Reset scale on line complete'); // デバッグ出力
       });
+    // 親ウィジェットのコールバックを呼び出す
+    widget.onLineComplete?.call();
     }
   }
 
@@ -155,6 +166,9 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
         _rotationController,
       ]),
       builder: (context, child) {
+        // スケール値をデバッグ出力
+        print('Current scale in build: ${_isTypingText ? _currentScale : 1.0}');
+
         return Transform.translate(
           offset: Offset(0,
               _positionAnimation.value.dy * MediaQuery.of(context).size.height),
@@ -165,9 +179,11 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
             child: Transform(
               alignment: Alignment.center,
               transform: Matrix4.identity()
-                ..scale(_isTypingText
-                    ? _pulseAnimation.value * _currentScale
-                    : _pulseAnimation.value)
+              // スケーリング方法を変更
+                ..scale(
+                  _isTypingText ? _currentScale : 1.0,
+                  _isTypingText ? _currentScale : 1.0,
+                )
                 ..rotateZ(_rotationController.value * 2 * pi),
               child: Container(
                 decoration: BoxDecoration(

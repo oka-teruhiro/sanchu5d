@@ -162,10 +162,10 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
   void _onCharacterDisplay() {
     if (mounted) {
       setState(() {
-        _isTypingText = true; // フラグ設定を追加
-        _currentScale = 1.0 + (_random.nextDouble() * 0.2 - 0.1);
-        //_currentScaleY = _currentScaleX;
-        //_currentScaleY = 1.0 + (_random.nextDouble() * 0.4 - 0.2);
+        _isTypingText = true;
+        // より大きな変化範囲に設定（1.0から2.0）
+        _currentScale = 1.0 + (_random.nextDouble() * 1.0);
+        //print('New scale: $_currentScale');
       });
     }
   }
@@ -188,12 +188,15 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
         _rotationController,
       ]),
       builder: (context, child) {
+        // パルスとスケールを別々に適用
+        final baseScale = _isTypingText ? _currentScale : 1.0;
+        final pulseEffect = _pulseAnimation.value;
         return Transform.translate(
           offset: Offset(0,
               _positionAnimation.value.dy * MediaQuery.of(context).size.height),
           child: Container(
-            width: 100,
-            height: 100,
+            width: 500,
+            height: 500,
             alignment: Alignment.center,
             child: Transform(
               alignment: Alignment.center,
@@ -244,16 +247,20 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
         width: w0,
         height: h1 - h2, // おみくじシートの高さ
         child: Container(
-          color: Colors.black.withAlpha(150), // おみくじシートに色をつけ透かす
+          //color: Colors.black.withAlpha(150), // おみくじシートに色をつけ透かす
           child: Stack(
             children: [
-              // 光彩画像のレイヤー
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  _buildKosaiImage(),
-                ],
-              ),
+              /*// 光彩画像のレイヤー
+              Positioned(
+                top: -100,
+                left: 0,
+                right: 0,
+                child: Container(
+                  color: Colors.amberAccent,
+                  height: 400,
+                  child: _buildKosaiImage(),
+                ),
+              ),*/
               // 飾り枠のレイヤー
               Transform.translate(
                 offset: const Offset(0, 0),

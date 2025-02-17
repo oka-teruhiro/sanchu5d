@@ -22,6 +22,10 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
   late Animation<Offset> _positionAnimation; // 追加：位置用
   bool _showOmikujiButton = false; // おみくじボタン表示制御
   bool _isMoving = false; // 追加：移動中フラグ
+  bool _isTypingText = false;
+  bool _isTyping = false;
+  double _typingScale = 1.0;
+  final Random _random = Random();
 
   @override
   void initState() {
@@ -29,7 +33,7 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
 
     // 初期拡大アニメーション (0→300 / 2秒)
     _scaleController = AnimationController(
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 1),
       vsync: this,
     );
     _scaleAnimation = Tween<double>(
@@ -148,6 +152,8 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
             builder: (BuildContext context) {
               return OmikujiBottomSheet(
                 omikuji: result['data'],
+                onCharacterDisplay: onCharacterDisplay,  // 追加
+                onLineComplete: onLineComplete,          // 追加
               );
             },
           );
@@ -165,7 +171,21 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
       }
     }
   }
-//}
+
+  void onCharacterDisplay() {
+    setState(() {
+      _isTyping = true;
+      _typingScale = 1.0 - (_random.nextDouble() * 0.3); // 1.0-1.3の範囲で変化
+    });
+  }
+
+  void onLineComplete() {
+    setState(() {
+      _isTyping = false;
+      _typingScale = 1.0;
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -183,15 +203,17 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
           Center(
             child: AnimatedBuilder(
               animation: Listenable.merge([
-                _scaleController,
+                _scaleController,//todo
                 _rotationController,
                 _pulseController,
                 _moveController,
               ]),
               builder: (context, child) {
-                final scale = _isMoving
-                    ? (300.0 / 400.0) * _pulseAnimation.value
-                    : _scaleAnimation.value * _pulseAnimation.value / 300;
+                final baseScale = _isTyping
+                    ? _typingScale
+                    : (_isMoving ? (300.0 / 400.0) : 1.0);
+
+                final scale = baseScale * _pulseAnimation.value;
 
                 return Transform.translate(
                   offset: _positionAnimation.value *
