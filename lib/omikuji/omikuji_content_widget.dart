@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'laser_beam_painter.dart';  // 新しく追加
 
 class OmikujiContentWidget extends StatefulWidget {
   final Map<String, dynamic> omikuji;
@@ -8,6 +9,7 @@ class OmikujiContentWidget extends StatefulWidget {
   final bool canStartAnimation; // アニメーション開始制御用のフラグを追加
   final VoidCallback? onCharacterDisplay;
   final VoidCallback? onLineComplete;
+  final Offset? centralPoint; // 光彩の中心点を受け取る
 
   const OmikujiContentWidget({
     Key? key,
@@ -17,6 +19,7 @@ class OmikujiContentWidget extends StatefulWidget {
     required this.canStartAnimation, // 新しいプロパティ
     this.onCharacterDisplay,
     this.onLineComplete,
+    this.centralPoint, // 追加
   }) : super(key: key);
 
   @override
@@ -32,11 +35,53 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
   int _currentChar = 0;
   bool _isAnimationComplete = false;
   bool _hasStartedAnimation = false; // アニメーション開始状態の追跡
+  final List<LaserBeamWidget> _activeBeams = [];
+  final GlobalKey _contentKey = GlobalKey();
+  late TextStyle _textStyle;
+  //Offset? _lastCharPosition;
+
+  /*void _updateLastCharPosition(String text, TextStyle style) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_contentKey.currentContext != null) {
+        final RenderBox box = _contentKey.currentContext!.findRenderObject() as RenderBox;
+        final position = box.localToGlobal(Offset.zero);
+
+        // テキストの位置を計算
+        final textPainter = TextPainter(
+          text: TextSpan(text: text, style: style),
+          textDirection: TextDirection.ltr,
+        );
+        textPainter.layout();
+
+        _lastCharPosition = Offset(
+          position.dx + textPainter.width,
+          position.dy,
+        );
+
+        // レーザービームを追加
+        if (widget.centralPoint != null) {
+          setState(() {
+            _activeBeams.add(
+              LaserBeamWidget(
+                startPoint: widget.centralPoint!,
+                endPoint: _lastCharPosition!,
+                duration: const Duration(milliseconds: 200),
+                onComplete: () {
+                  setState(() {
+                    _activeBeams.removeAt(0);
+                  });
+                },
+              ),
+            );
+          });
+        }
+      }
+    });
+  }*/
 
   @override
   void didUpdateWidget(OmikujiContentWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // canStartAnimationがtrueになった時点でアニメーションを開始
     if (widget.canStartAnimation && !_hasStartedAnimation) {
       _hasStartedAnimation = true;
       _startAnimation();
@@ -65,7 +110,6 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
         _currentChar = 0;
         _currentLine++;
         if (widget.onLineComplete != null) {
-          // 追加
           widget.onLineComplete!();
         } // 追加
       });
@@ -87,6 +131,12 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
     setState(() {
       _currentText = content[_currentLine].substring(0, _currentChar + 1);
       _currentChar++;
+
+      // レーザービーム効果のトリガー
+      if (widget.centralPoint != null) {
+        _addLaserBeam();
+      }
+
       // ここでアニメーションコントローラーに通知
       if (widget.onCharacterDisplay != null) {
         widget.onCharacterDisplay!();
@@ -106,18 +156,64 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
     _animateText();
   }
 
+  // 新しく追加するメソッド
+  void _addLaserBeam() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_contentKey.currentContext != null) {
+        final RenderBox box = _contentKey.currentContext!.findRenderObject() as RenderBox;
+        final position = box.localToGlobal(Offset.zero);
+
+        final content = List<String>.from(widget.omikuji['content']);
+        final lineText = content[_currentLine].substring(0, _currentChar);
+
+        // 現在の文字の位置を計算
+        final textPainter = TextPainter(
+          text: TextSpan(
+            text: lineText,
+            style: _textStyle,
+          ),
+          textDirection: TextDirection.ltr,
+        );
+        textPainter.layout();
+
+        // 縦方向のパディングを計算
+        final double verticalPadding = ((widget.contentHeight -
+            ((content.length * (_textStyle.fontSize ?? 20)) +
+                ((content.length - 1) * (_textStyle.fontSize ?? 20) * (_textStyle.height ?? 1.0)))) /
+            2).clamp(0.0, double.infinity);
+
+        final charPosition = Offset(
+          position.dx + textPainter.width,
+          position.dy + verticalPadding + (_currentLine * (_textStyle.fontSize ?? 20) * (_textStyle.height ?? 1.0)),  // 縦位置：パディング + 行数 * 行の高さ
+        );
+
+        setState(() {
+          _activeBeams.add(
+            LaserBeamWidget(
+              startPoint: widget.centralPoint!,
+              endPoint: charPosition,
+              duration: const Duration(milliseconds: 200),
+              onComplete: () {
+                if (mounted) {
+                  setState(() {
+                    _activeBeams.removeAt(0);
+                  });
+                }
+              },
+            ),
+          );
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final content = List<String>.from(widget.omikuji['content']);
 
     // 水平方向のパディングと行間係数を変数化
     final double gk = 1.0; // 行間係数（要調整）：フォントサイズの何倍にするか
-    final double webk;
-    if (kIsWeb) {
-      webk = 20; // web用　有効幅をこの数引いて計算する
-    } else {
-      webk = 0; // Android用
-    }
+    final double webk = kIsWeb ? 20 : 0;
     double verticalPadding = 0;
 
     // 利用可能な幅と高さを計算
@@ -132,13 +228,8 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
     // フォントサイズを計算
     final calculatedFontSize = (availableWidth / maxLength) * 1.0; // 係数を1.0に調整
     final baseFontSize = calculatedFontSize.clamp(13.0, 60.0);
-
     // 1行の高さを計算（フォントサイズ + 行間）
     final lineHeight = baseFontSize * (1 + gk);
-
-    // 最大表示可能行数を計算
-    //final maxVisibleLines = (availableHeight / lineHeight).floor();
-
     // 全行数
     final totalLines = content.length;
 
@@ -148,93 +239,77 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
             2) -
         (lineHeight / 2);
 
-    if (hPadTop > 0) {
-      verticalPadding = hPadTop;
-    } else {
-      verticalPadding = 0;
-    }
+    verticalPadding = hPadTop > 0 ? hPadTop : 0;
 
-    // 上下の余白を計算
-    //final double verticalPadding = totalLines <= maxVisibleLines
-    //    ? (availableHeight - (totalLines * lineHeight)) / 2 // 中央寄せの場合の余白
-    //   : 0; // スクロールが必要な場合は余白なし
+    _textStyle = TextStyle(
+      fontSize: baseFontSize,
+      color: Colors.white,
+      height: 1 + gk,
+    );
 
-    // デバッグ出力
-    //print('Screen width: ${screenSize.width}');
     print('Available width: $availableWidth');
     print('Available height: $availableHeight');
     print('Available height: $availableHeight');
     print('Max length: $maxLength');
     print('Font size: $baseFontSize');
-    //print('Line height: $lineHeight');
-    //print('Max visible lines: $maxVisibleLines');
     print('Total lines: $totalLines');
     print('Vertical padding: $verticalPadding');
     print('hPadTop: $hPadTop');
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return SingleChildScrollView(
-          controller: _scrollController,
-          physics: _isAnimationComplete
-              ? AlwaysScrollableScrollPhysics()
-              : NeverScrollableScrollPhysics(),
-          child: Container(
-            constraints: BoxConstraints(
-              minHeight: constraints.maxHeight,
-            ),
-            width: double.infinity, // 精一杯に広げる
-            child: Stack(
-              // Stackを使用して左余白を固定
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(
-                    left: 0,
-                    right: 0,
-                    top: verticalPadding,
+    return Stack(
+      children: [
+        Container(
+          key: _contentKey,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                controller: _scrollController,
+                physics: _isAnimationComplete
+                    ? const AlwaysScrollableScrollPhysics()
+                    : const NeverScrollableScrollPhysics(),
+                child: Container(
+                  constraints: BoxConstraints(
+                    minHeight: constraints.maxHeight,
                   ),
-                  child: Container(
-                    //color: Colors.blue, // todo:
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ..._displayedContent.map((text) {
-                          if (text.isEmpty) {
-                            return SizedBox(height: lineHeight);
-                          }
-                          return Text(
-                            text,
-                            style: TextStyle(
-                              fontSize: baseFontSize,
-                              color: Colors.white,
-                              height: 1 + gk,
-                            ),
-                            textAlign: TextAlign.left,
-                          );
-                        }),
-                        if (_currentLine < content.length)
-                          Container(
-                            alignment: Alignment.centerLeft, // 左揃えを強制
-                            child: Text(
-                              _currentText,
-                              style: TextStyle(
-                                fontSize: baseFontSize,
-                                color: Colors.white,
-                                height: 1 + gk,
+                  width: double.infinity, // 精一杯に広げる
+                  child: Padding(
+                        padding: EdgeInsets.only(
+                          top: verticalPadding,
+                          bottom: verticalPadding,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ..._displayedContent.map((text) {
+                              if (text.isEmpty) {
+                                return SizedBox(height: lineHeight);
+                              }
+                              return Text(
+                                text,
+                                style: _textStyle,
+                                textAlign: TextAlign.left,
+                              );
+                            }),
+                            if (_currentLine < content.length)
+                              Container(
+                                alignment: Alignment.centerLeft, // 左揃えを強制
+                                child: Text(
+                                  _currentText,
+                                  style: _textStyle,
+                                ),
                               ),
-                              //textAlign: TextAlign.left,
-                            ),
-                          ),
-                      ],
-                    ),
+                          ],
+                        ),
+                      ),
+
                   ),
-                ),
-                //SizedBox(height: verticalPadding),
-              ],
-            ),
+              );
+            },
           ),
-        );
-      },
+        ),
+        // レーザービーム効果のレイヤー
+        ..._activeBeams,
+      ],
     );
   }
 }

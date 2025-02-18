@@ -21,10 +21,12 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
   late Animation<Offset> _positionAnimation; // 追加：位置用
   bool _showOmikujiButton = false; // おみくじボタン表示制御
   bool _isMoving = false; // 追加：移動中フラグ
-  bool _isTypingText = false;
+  //bool _isTypingText = false;
   bool _isTyping = false;
   double _typingScale = 1.0;
   final Random _random = Random();
+  Offset _centralPoint = Offset.zero;
+  final GlobalKey _kouroKey = GlobalKey(); // 光彩のキーを追加
 
   @override
   void initState() {
@@ -115,6 +117,8 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
 
     await _moveController.forward();
 
+    final centralPoint = _getKouroCenterPosition();
+
     // ここでおみくじを表示
     if (mounted) {
       try {
@@ -153,6 +157,7 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
                 omikuji: result['data'],
                 onCharacterDisplay: onCharacterDisplay,  // 追加
                 onLineComplete: onLineComplete,          // 追加
+                centralPoint: centralPoint, // 実際の光彩の中心位置を渡す
               );
             },
           );
@@ -185,6 +190,18 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
     });
   }
 
+  // 光彩の中心位置を取得するメソッドを追加
+  Offset _getKouroCenterPosition() {
+    if (_kouroKey.currentContext == null) return Offset.zero;
+
+    final RenderBox box = _kouroKey.currentContext!.findRenderObject() as RenderBox;
+    final position = box.localToGlobal(
+        Offset(box.size.width / 2, box.size.height / 2)
+    );
+    return position;
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -192,6 +209,12 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
     double hTop = 0; // 80
     double hBottom = 56; // 戻るボタンエリヤの高さ
     double h1 = h0 - hTop;
+    final Size screenSize = MediaQuery.of(context).size;
+    _centralPoint = Offset(
+      screenSize.width / 2,
+      (screenSize.height / 2) - (_positionAnimation.value.dy * screenSize.height),
+    );
+
     // buildメソッドをクラス内に移動
     return Scaffold(
       backgroundColor: Colors.black,
@@ -225,6 +248,7 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
                       ..scale(scale)
                       ..rotateZ(_rotationController.value * 2 * pi),
                     child: SizedBox(
+                      key: _kouroKey, // キーを追加
                       width: 400,
                       height: 400,
                       child: Image.asset(
