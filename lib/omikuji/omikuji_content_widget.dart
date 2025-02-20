@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'laser_beam_painter.dart';  // 新しく追加
+//import 'laser_beam_painter.dart';  // 新しく追加
+typedef OnCharacterPositionCallback = void Function(Offset position);
 
 class OmikujiContentWidget extends StatefulWidget {
   final Map<String, dynamic> omikuji;
@@ -9,7 +10,8 @@ class OmikujiContentWidget extends StatefulWidget {
   final bool canStartAnimation; // アニメーション開始制御用のフラグを追加
   final VoidCallback? onCharacterDisplay;
   final VoidCallback? onLineComplete;
-  final Offset? centralPoint; // 光彩の中心点を受け取る
+  //final Offset? centralPoint; // 光彩の中心点を受け取る
+  final OnCharacterPositionCallback? onCharacterPosition; // タイプアウトしている文字の中心点を渡す
 
   const OmikujiContentWidget({
     Key? key,
@@ -19,7 +21,8 @@ class OmikujiContentWidget extends StatefulWidget {
     required this.canStartAnimation, // 新しいプロパティ
     this.onCharacterDisplay,
     this.onLineComplete,
-    this.centralPoint, // 追加
+    //this.centralPoint, // 追加
+    this.onCharacterPosition,
   }) : super(key: key);
 
   @override
@@ -35,7 +38,7 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
   int _currentChar = 0;
   bool _isAnimationComplete = false;
   bool _hasStartedAnimation = false; // アニメーション開始状態の追跡
-  final List<LaserBeamWidget> _activeBeams = [];
+  //final List<LaserBeamWidget> _activeBeams = [];
   final GlobalKey _contentKey = GlobalKey();
   late TextStyle _textStyle;
   //Offset? _lastCharPosition;
@@ -132,10 +135,12 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
       _currentText = content[_currentLine].substring(0, _currentChar + 1);
       _currentChar++;
 
+      _notifyCharacterPosition();
+
       // レーザービーム効果のトリガー
-      if (widget.centralPoint != null) {
-        _addLaserBeam();
-      }
+      //if (widget.centralPoint != null) {
+      //  _addLaserBeam();
+      //}
 
       // ここでアニメーションコントローラーに通知
       if (widget.onCharacterDisplay != null) {
@@ -157,7 +162,9 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
   }
 
   // 新しく追加するメソッド
-  void _addLaserBeam() {
+  void _notifyCharacterPosition() {
+    final callback = widget.onCharacterPosition;
+    if (callback == null) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_contentKey.currentContext != null) {
         final RenderBox box = _contentKey.currentContext!.findRenderObject() as RenderBox;
@@ -186,24 +193,9 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
           position.dx + textPainter.width,
           position.dy + verticalPadding + (_currentLine * (_textStyle.fontSize ?? 20) * (_textStyle.height ?? 1.0)),  // 縦位置：パディング + 行数 * 行の高さ
         );
-
-        setState(() {
-          _activeBeams.add(
-            LaserBeamWidget(
-              startPoint: widget.centralPoint!,
-              endPoint: charPosition,
-              duration: const Duration(milliseconds: 200),
-              onComplete: () {
-                if (mounted) {
-                  setState(() {
-                    _activeBeams.removeAt(0);
-                  });
-                }
-              },
-            ),
-          );
-        });
+        callback(charPosition);  // nullチェック済みの変数を使用
       }
+
     });
   }
 
@@ -256,60 +248,54 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
     print('Vertical padding: $verticalPadding');
     print('hPadTop: $hPadTop');
 
-    return Stack(
-      children: [
-        Container(
-          key: _contentKey,
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return SingleChildScrollView(
-                controller: _scrollController,
-                physics: _isAnimationComplete
-                    ? const AlwaysScrollableScrollPhysics()
-                    : const NeverScrollableScrollPhysics(),
-                child: Container(
-                  constraints: BoxConstraints(
-                    minHeight: constraints.maxHeight,
+    return Container(
+      key: _contentKey,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            controller: _scrollController,
+            physics: _isAnimationComplete
+                ? const AlwaysScrollableScrollPhysics()
+                : const NeverScrollableScrollPhysics(),
+            child: Container(
+              constraints: BoxConstraints(
+                minHeight: constraints.maxHeight,
+              ),
+              width: double.infinity, // 精一杯に広げる
+              child: Padding(
+                    padding: EdgeInsets.only(
+                      top: verticalPadding,
+                      bottom: verticalPadding,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ..._displayedContent.map((text) {
+                          if (text.isEmpty) {
+                            return SizedBox(height: lineHeight);
+                          }
+                          return Text(
+                            text,
+                            style: _textStyle,
+                            textAlign: TextAlign.left,
+                          );
+                        }),
+                        if (_currentLine < content.length)
+                          Container(
+                            alignment: Alignment.centerLeft, // 左揃えを強制
+                            child: Text(
+                              _currentText,
+                              style: _textStyle,
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
-                  width: double.infinity, // 精一杯に広げる
-                  child: Padding(
-                        padding: EdgeInsets.only(
-                          top: verticalPadding,
-                          bottom: verticalPadding,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ..._displayedContent.map((text) {
-                              if (text.isEmpty) {
-                                return SizedBox(height: lineHeight);
-                              }
-                              return Text(
-                                text,
-                                style: _textStyle,
-                                textAlign: TextAlign.left,
-                              );
-                            }),
-                            if (_currentLine < content.length)
-                              Container(
-                                alignment: Alignment.centerLeft, // 左揃えを強制
-                                child: Text(
-                                  _currentText,
-                                  style: _textStyle,
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
 
-                  ),
-              );
-            },
-          ),
-        ),
-        // レーザービーム効果のレイヤー
-        ..._activeBeams,
-      ],
+              ),
+          );
+        },
+      ),
     );
   }
 }

@@ -7,14 +7,16 @@ class OmikujiBottomSheet extends StatefulWidget {
   final Map<String, dynamic> omikuji;
   final VoidCallback? onCharacterDisplay; // 追加
   final VoidCallback? onLineComplete; // 追加
-  final Offset? centralPoint; // 追加
+  //final Offset? centralPoint; // 追加
+  final OnCharacterPositionCallback? onCharacterPosition;  // 追加
 
   const OmikujiBottomSheet({
     Key? key,
     required this.omikuji,
     this.onCharacterDisplay, // 追加
     this.onLineComplete, // 追加
-    this.centralPoint, // 追加
+    //this.centralPoint, // 追加
+    this.onCharacterPosition,  // 追加
   }) : super(key: key);
 
   @override
@@ -130,7 +132,7 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
                         canStartAnimation: _canStartTextAnimation, // フラグを渡す
                         onCharacterDisplay: widget.onCharacterDisplay, // コールバックを追加
                         onLineComplete: widget.onLineComplete , // 追加
-                        centralPoint: widget.centralPoint, // 追加
+                        onCharacterPosition: widget.onCharacterPosition,  // centralPointを削除してこれだけに
                       ),
                     ),
                   ],

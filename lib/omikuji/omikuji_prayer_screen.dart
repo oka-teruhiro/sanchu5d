@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 import 'omikuji_bottom_sheet.dart';
 import 'omikuji_service.dart';
+import 'laser_beam_painter.dart';
+import 'omikuji_content_widget.dart';  // OnCharacterPositionCallback の定義のため
 
 class OmikujiPrayerScreen extends StatefulWidget {
   const OmikujiPrayerScreen({super.key});
@@ -27,6 +29,7 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
   final Random _random = Random();
   Offset _centralPoint = Offset.zero;
   final GlobalKey _kouroKey = GlobalKey(); // 光彩のキーを追加
+  final List<LaserBeamWidget> _activeBeams = [];
 
   @override
   void initState() {
@@ -157,7 +160,7 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
                 omikuji: result['data'],
                 onCharacterDisplay: onCharacterDisplay,  // 追加
                 onLineComplete: onLineComplete,          // 追加
-                centralPoint: centralPoint, // 実際の光彩の中心位置を渡す
+                onCharacterPosition: _addLaserBeam,  // 追加
               );
             },
           );
@@ -199,6 +202,26 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
         Offset(box.size.width / 2, box.size.height / 2)
     );
     return position;
+  }
+
+  void _addLaserBeam(Offset targetPosition) {
+    final beamStart = _getKouroCenterPosition();
+    setState(() {
+      _activeBeams.add(
+        LaserBeamWidget(
+          startPoint: beamStart,
+          endPoint: targetPosition,
+          duration: const Duration(milliseconds: 200),
+          onComplete: () {
+            if (mounted) {
+              setState(() {
+                _activeBeams.removeAt(0);
+              });
+            }
+          },
+        ),
+      );
+    });
   }
 
 
@@ -261,6 +284,19 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
               },
             ),
           ),
+
+          // レーザービーム効果のレイヤー
+          ..._activeBeams,
+
+          /*// ボトムシート
+          if (mounted)
+            OmikujiBottomSheet(
+              omikuji: widget.omikuji,
+              onCharacterDisplay: onCharacterDisplay,
+              onLineComplete: onLineComplete,
+              onCharacterPosition: _addLaserBeam,
+            ),*/
+
           // 下部のボタン配置
           Transform.translate(
             offset: Offset(0, h1 - hBottom),
