@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-//import 'laser_beam_painter.dart';  // 新しく追加
 typedef OnCharacterPositionCallback = void Function(Offset position);
 
 class OmikujiContentWidget extends StatefulWidget {
@@ -10,7 +9,6 @@ class OmikujiContentWidget extends StatefulWidget {
   final bool canStartAnimation; // アニメーション開始制御用のフラグを追加
   final VoidCallback? onCharacterDisplay;
   final VoidCallback? onLineComplete;
-  //final Offset? centralPoint; // 光彩の中心点を受け取る
   final OnCharacterPositionCallback? onCharacterPosition; // タイプアウトしている文字の中心点を渡す
 
   const OmikujiContentWidget({
@@ -21,7 +19,6 @@ class OmikujiContentWidget extends StatefulWidget {
     required this.canStartAnimation, // 新しいプロパティ
     this.onCharacterDisplay,
     this.onLineComplete,
-    //this.centralPoint, // 追加
     this.onCharacterPosition,
   }) : super(key: key);
 
@@ -38,49 +35,8 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
   int _currentChar = 0;
   bool _isAnimationComplete = false;
   bool _hasStartedAnimation = false; // アニメーション開始状態の追跡
-  //final List<LaserBeamWidget> _activeBeams = [];
   final GlobalKey _contentKey = GlobalKey();
   late TextStyle _textStyle;
-  //Offset? _lastCharPosition;
-
-  /*void _updateLastCharPosition(String text, TextStyle style) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_contentKey.currentContext != null) {
-        final RenderBox box = _contentKey.currentContext!.findRenderObject() as RenderBox;
-        final position = box.localToGlobal(Offset.zero);
-
-        // テキストの位置を計算
-        final textPainter = TextPainter(
-          text: TextSpan(text: text, style: style),
-          textDirection: TextDirection.ltr,
-        );
-        textPainter.layout();
-
-        _lastCharPosition = Offset(
-          position.dx + textPainter.width,
-          position.dy,
-        );
-
-        // レーザービームを追加
-        if (widget.centralPoint != null) {
-          setState(() {
-            _activeBeams.add(
-              LaserBeamWidget(
-                startPoint: widget.centralPoint!,
-                endPoint: _lastCharPosition!,
-                duration: const Duration(milliseconds: 200),
-                onComplete: () {
-                  setState(() {
-                    _activeBeams.removeAt(0);
-                  });
-                },
-              ),
-            );
-          });
-        }
-      }
-    });
-  }*/
 
   @override
   void didUpdateWidget(OmikujiContentWidget oldWidget) {
@@ -137,11 +93,6 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
 
       _notifyCharacterPosition();
 
-      // レーザービーム効果のトリガー
-      //if (widget.centralPoint != null) {
-      //  _addLaserBeam();
-      //}
-
       // ここでアニメーションコントローラーに通知
       if (widget.onCharacterDisplay != null) {
         widget.onCharacterDisplay!();
@@ -150,26 +101,26 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
 
     await Future.delayed(const Duration(milliseconds: 150));
 
-
-    /*if (_scrollController.hasClients) {
-      await _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 100),
-        curve: Curves.easeOut,
-      );
-    }*/
-
     await Future.delayed(const Duration(milliseconds: 40)); // 50 文字間隔
     _animateText();
   }
 
-  // 新しく追加するメソッド
+  // パディング計算用のメソッドを追加
+  double _calculateVerticalPadding(List<String> content, TextStyle style) {
+    final fontSize = style.fontSize ?? 20;
+    final height = style.height ?? 1.0;
+    final lineHeight = fontSize * height;
+    final totalTextHeight = content.length * fontSize + (content.length - 1) * fontSize * (height - 1);
+    return ((widget.contentHeight - totalTextHeight) / 2).clamp(0.0, double.infinity);
+  }
+
+  // レーザービームの終点を求める
   void _notifyCharacterPosition() {
     final callback = widget.onCharacterPosition;
-    if (callback == null) return;
+    final context = _contentKey.currentContext;
+    if (callback == null || context == null || !mounted) return;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_contentKey.currentContext != null && mounted) {
         final RenderBox containerBox = _contentKey.currentContext!.findRenderObject() as RenderBox;
         final containerPosition = containerBox.localToGlobal(Offset.zero);
 
@@ -177,36 +128,44 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
         final content = List<String>.from(widget.omikuji['content']);
         final currentLineText = content[_currentLine];
         final lineTextUpToCurrent = currentLineText.substring(0, _currentChar);
+        final currentChar = _currentChar > 0 ? currentLineText[_currentChar - 1] : '';
 
         // 行の高さを計算
         final lineHeight = (_textStyle.fontSize ?? 20) * (_textStyle.height ?? 1.0);
 
         // パディング計算
-        final verticalPadding = ((widget.contentHeight -
-            ((content.length * (_textStyle.fontSize ?? 20)) +
-                ((content.length - 1) * (_textStyle.fontSize ?? 20) * (_textStyle.height ?? 1.0)))) /
-            2).clamp(0.0, double.infinity);
+        final verticalPadding = _calculateVerticalPadding(content, _textStyle);
 
-        // テキストの位置計算
+        // これまでの文字列の幅を計算
         final textPainter = TextPainter(
           text: TextSpan(
-            text: lineTextUpToCurrent,
+            text: lineTextUpToCurrent.substring(0, lineTextUpToCurrent.length - 1),
             style: _textStyle,
           ),
           textDirection: TextDirection.ltr,
         );
         textPainter.layout();
 
+        // テキストの位置計算
+        final currentCharPainter = TextPainter(
+          text: TextSpan(
+            text: currentChar,
+            style: _textStyle,
+          ),
+          textDirection: TextDirection.ltr,
+        );
+        currentCharPainter.layout();
+
         // 文字の中心位置を計算
         final charPosition = Offset(
-          containerPosition.dx + textPainter.width,  // X座標：コンテナの左端 + これまでの文字幅
+          containerPosition.dx + textPainter.width + (currentCharPainter.width / 2),  // X座標：これまでの文字幅 + 現在の文字の中心
           containerPosition.dy + verticalPadding +
               (_currentLine * lineHeight) +  // 行数 × 行の高さ
-              (_textStyle.fontSize ?? 20) / 2,  // 文字の縦方向中心に合わせる
+              lineHeight / 2 -  // 行の高さの半分（文字の縦中心）
+              _scrollController.offset,  // スクロール位置を引く
         );
 
         callback(charPosition);
-      }
     });
   }
 
@@ -250,6 +209,15 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
       color: Colors.white,
       height: 1 + gk,
     );
+
+    _textStyle = TextStyle(
+      fontSize: baseFontSize,
+      color: Colors.white,
+      height: 1 + gk,
+    );
+
+    // 同じメソッドを使用してパディングを計算
+    verticalPadding = _calculateVerticalPadding(content, _textStyle);
 
     print('Available width: $availableWidth');
     print('Available height: $availableHeight');
@@ -303,7 +271,6 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
                       ],
                     ),
                   ),
-
               ),
           );
         },
