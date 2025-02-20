@@ -13,7 +13,8 @@ class LaserBeamPainter extends CustomPainter {
     required this.endPoint,
     required this.progress,
     //this.beamColor = const Color(0xFF64FFDA),
-    this.beamColor = Colors.orangeAccent,
+    //this.beamColor = Colors.orangeAccent,
+    required this.beamColor,  // 必須パラメータに変更
   });
 
   @override
@@ -93,6 +94,7 @@ class LaserBeamWidget extends StatefulWidget {
   final Offset endPoint;
   final VoidCallback? onComplete;
   final Duration duration;
+  final Color color;  // 追加
 
   const LaserBeamWidget({
     Key? key,
@@ -100,6 +102,7 @@ class LaserBeamWidget extends StatefulWidget {
     required this.endPoint,
     this.onComplete,
     this.duration = const Duration(milliseconds: 300),
+    this.color = const Color(0xFF64FFDA),  // デフォルト色を設定
   }) : super(key: key);
 
   @override
@@ -145,6 +148,7 @@ class _LaserBeamWidgetState extends State<LaserBeamWidget>
             startPoint: widget.startPoint,
             endPoint: widget.endPoint,
             progress: _progressAnimation.value,
+            beamColor: widget.color,  // 色を渡す
           ),
           size: Size.infinite,
         );

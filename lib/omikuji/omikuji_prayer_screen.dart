@@ -20,6 +20,8 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
   late Animation<double> _scaleAnimation; // 0→300のスケール
   late Animation<double> _pulseAnimation; // 1.0→0.8の脈動
   late Animation<Offset> _positionAnimation; // 追加：位置用
+  //late AnimationController _scaleController;
+  //late AnimationController _rotationController;
   bool _showOmikujiButton = false; // おみくじボタン表示制御
   bool _isMoving = false; // 追加：移動中フラグ
   bool _isTyping = false;
@@ -28,6 +30,7 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
   Offset _centralPoint = Offset.zero;
   final GlobalKey _kouroKey = GlobalKey(); // 光彩のキーを追加
   final List<LaserBeamWidget> _activeBeams = [];
+  int? _currentCreatorId;  // 追加：creatorIDを保持するフィールド
 
   @override
   void initState() {
@@ -138,15 +141,21 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
         final omikujiService = OmikujiService();
         final result =
             await omikujiService.selectOmikujiByTiming(DateTime.now());
+        _currentCreatorId = result['data']['creatorId'] as int?;
+
+        // デバッグ出力を追加
+        print('Creator ID: $_currentCreatorId');  // creatorIdの値を確認
 
         if (mounted) Navigator.pop(context);
 
         if (mounted) {
+          final creatorId = result['data']['creatorId'] as int?; // creatorIdを取得
           showModalBottomSheet(
             context: context,
             isScrollControlled: true,
             backgroundColor: Colors.transparent,
-            barrierColor: Colors.transparent,  // 背景を透明に設定
+            barrierColor: Colors.transparent,
+            // 背景を透明に設定
             transitionAnimationController: AnimationController(
               duration: const Duration(milliseconds: 500),
               vsync: Navigator.of(context),
@@ -154,9 +163,11 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
             builder: (BuildContext context) {
               return OmikujiBottomSheet(
                 omikuji: result['data'],
-                onCharacterDisplay: onCharacterDisplay,  // 追加
-                onLineComplete: onLineComplete,          // 追加
-                onCharacterPosition: _addLaserBeam,  // 追加
+                onCharacterDisplay: onCharacterDisplay, // 追加
+                onLineComplete: onLineComplete, // 追加
+                onCharacterPosition: (position) {
+                  _addLaserBeam(position, creatorId); // creatorIdを渡す
+                },
               );
             },
           );
@@ -200,14 +211,18 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
     return position;
   }
 
-  void _addLaserBeam(Offset targetPosition) {
+  void _addLaserBeam(Offset targetPosition, int? creatorId) {
     final beamStart = _getKouroCenterPosition();
+    //final int? creatorId = 1;  // ここは適切な形で取得する必要があります
+    // 作成者IDに基づいて色を決定
+    final Color beamColor = _getBeamColor(creatorId);
     setState(() {
       _activeBeams.add(
         LaserBeamWidget(
           startPoint: beamStart,
           endPoint: targetPosition,
           duration: const Duration(milliseconds: 100),
+          color: beamColor,  // 色を指定
           onComplete: () {
             if (mounted) {
               setState(() {
@@ -220,6 +235,33 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
     });
   }
 
+  // 作成者IDに基づいて色を返すメソッド
+  Color _getBeamColor(int? creatorId) {
+    // デバッグ出力を追加
+    print('Getting beam color for creator ID: $creatorId');
+    if (creatorId == null) {
+      print('Creator ID is null, using default color');
+      return const Color(0xFF64FFDA);
+    }
+
+
+    // 作成者IDに基づいて色を決定
+    switch (creatorId) {
+      case 1:
+        return Colors.purpleAccent;
+      case 2:
+        return Colors.lightBlueAccent;
+      case 3:
+        return Colors.lightGreenAccent;
+      case 4:
+        return Colors.yellowAccent;
+      case 5:
+        return Colors.red;
+      default:
+      // IDを使って色相を決定する方法
+        return Colors.white;
+    }
+  }
 
 
   @override

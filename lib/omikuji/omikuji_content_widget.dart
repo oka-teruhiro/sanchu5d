@@ -10,6 +10,7 @@ class OmikujiContentWidget extends StatefulWidget {
   final VoidCallback? onCharacterDisplay;
   final VoidCallback? onLineComplete;
   final OnCharacterPositionCallback? onCharacterPosition; // タイプアウトしている文字の中心点を渡す
+  final int? creatorId;  // 追加
 
   const OmikujiContentWidget({
     Key? key,
@@ -20,6 +21,7 @@ class OmikujiContentWidget extends StatefulWidget {
     this.onCharacterDisplay,
     this.onLineComplete,
     this.onCharacterPosition,
+    this.creatorId,  // 追加
   }) : super(key: key);
 
   @override

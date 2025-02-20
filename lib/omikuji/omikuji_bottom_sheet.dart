@@ -8,6 +8,7 @@ class OmikujiBottomSheet extends StatefulWidget {
   final VoidCallback? onCharacterDisplay; // 追加
   final VoidCallback? onLineComplete; // 追加
   final OnCharacterPositionCallback? onCharacterPosition;  // 追加
+  final int? creatorId;  // 追加
 
   const OmikujiBottomSheet({
     Key? key,
@@ -15,6 +16,7 @@ class OmikujiBottomSheet extends StatefulWidget {
     this.onCharacterDisplay, // 追加
     this.onLineComplete, // 追加
     this.onCharacterPosition,  // 追加
+    this.creatorId,  // 追加
   }) : super(key: key);
 
   @override
