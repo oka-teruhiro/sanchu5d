@@ -7,7 +7,6 @@ class OmikujiBottomSheet extends StatefulWidget {
   final Map<String, dynamic> omikuji;
   final VoidCallback? onCharacterDisplay; // 追加
   final VoidCallback? onLineComplete; // 追加
-  //final Offset? centralPoint; // 追加
   final OnCharacterPositionCallback? onCharacterPosition;  // 追加
 
   const OmikujiBottomSheet({
@@ -15,7 +14,6 @@ class OmikujiBottomSheet extends StatefulWidget {
     required this.omikuji,
     this.onCharacterDisplay, // 追加
     this.onLineComplete, // 追加
-    //this.centralPoint, // 追加
     this.onCharacterPosition,  // 追加
   }) : super(key: key);
 
@@ -27,7 +25,6 @@ class _OmikujiBottomSheetState extends State<OmikujiBottomSheet>
     with TickerProviderStateMixin {
   // ２つのアニメーション
   // アニメーションに必要なミックスイン
-
   late AnimationController _controller; // アニメーションのコントローラー
   late Animation<double> _slideAnimation; // スライドアップ用
   late Animation<double> _pathAnimation; // パス描画用

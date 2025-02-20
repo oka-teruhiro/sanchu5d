@@ -13,7 +13,7 @@ class LaserBeamPainter extends CustomPainter {
     required this.endPoint,
     required this.progress,
     //this.beamColor = const Color(0xFF64FFDA),
-    this.beamColor = Colors.white,
+    this.beamColor = Colors.orangeAccent,
   });
 
   @override
@@ -34,8 +34,8 @@ class LaserBeamPainter extends CustomPainter {
     // グラデーション効果
     final gradient = LinearGradient(
       colors: [
-        beamColor.withOpacity(0.8),
-        beamColor.withOpacity(0.4),
+        beamColor.withAlpha(255),
+        beamColor.withAlpha(0),
       ],
     );
 

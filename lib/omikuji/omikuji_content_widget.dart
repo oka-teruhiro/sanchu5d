@@ -109,7 +109,6 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
   double _calculateVerticalPadding(List<String> content, TextStyle style) {
     final fontSize = style.fontSize ?? 20;
     final height = style.height ?? 1.0;
-    final lineHeight = fontSize * height;
     final totalTextHeight = content.length * fontSize + (content.length - 1) * fontSize * (height - 1);
     return ((widget.contentHeight - totalTextHeight) / 2).clamp(0.0, double.infinity);
   }

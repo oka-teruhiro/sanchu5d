@@ -3,7 +3,6 @@ import 'dart:math';
 import 'omikuji_bottom_sheet.dart';
 import 'omikuji_service.dart';
 import 'laser_beam_painter.dart';
-import 'omikuji_content_widget.dart';  // OnCharacterPositionCallback の定義のため
 
 class OmikujiPrayerScreen extends StatefulWidget {
   const OmikujiPrayerScreen({super.key});
@@ -23,7 +22,6 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
   late Animation<Offset> _positionAnimation; // 追加：位置用
   bool _showOmikujiButton = false; // おみくじボタン表示制御
   bool _isMoving = false; // 追加：移動中フラグ
-  //bool _isTypingText = false;
   bool _isTyping = false;
   double _typingScale = 1.0;
   final Random _random = Random();
@@ -119,8 +117,6 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
     });
 
     await _moveController.forward();
-
-    final centralPoint = _getKouroCenterPosition();
 
     // ここでおみくじを表示
     if (mounted) {
@@ -287,15 +283,6 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
 
           // レーザービーム効果のレイヤー
           ..._activeBeams,
-
-          /*// ボトムシート
-          if (mounted)
-            OmikujiBottomSheet(
-              omikuji: widget.omikuji,
-              onCharacterDisplay: onCharacterDisplay,
-              onLineComplete: onLineComplete,
-              onCharacterPosition: _addLaserBeam,
-            ),*/
 
           // 下部のボタン配置
           Transform.translate(
