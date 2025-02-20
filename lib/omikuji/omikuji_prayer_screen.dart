@@ -211,7 +211,7 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
         LaserBeamWidget(
           startPoint: beamStart,
           endPoint: targetPosition,
-          duration: const Duration(milliseconds: 200),
+          duration: const Duration(milliseconds: 100),
           onComplete: () {
             if (mounted) {
               setState(() {

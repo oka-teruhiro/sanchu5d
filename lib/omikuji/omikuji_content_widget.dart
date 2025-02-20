@@ -148,14 +148,16 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
       }
     });
 
-    await Future.delayed(const Duration(milliseconds: 100));
-    if (_scrollController.hasClients) {
+    await Future.delayed(const Duration(milliseconds: 150));
+
+
+    /*if (_scrollController.hasClients) {
       await _scrollController.animateTo(
         _scrollController.position.maxScrollExtent,
         duration: const Duration(milliseconds: 100),
         curve: Curves.easeOut,
       );
-    }
+    }*/
 
     await Future.delayed(const Duration(milliseconds: 40)); // 50 文字間隔
     _animateText();
@@ -165,39 +167,49 @@ class _OmikujiContentWidgetState extends State<OmikujiContentWidget>
   void _notifyCharacterPosition() {
     final callback = widget.onCharacterPosition;
     if (callback == null) return;
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_contentKey.currentContext != null) {
-        final RenderBox box = _contentKey.currentContext!.findRenderObject() as RenderBox;
-        final position = box.localToGlobal(Offset.zero);
+      if (_contentKey.currentContext != null && mounted) {
+        final RenderBox containerBox = _contentKey.currentContext!.findRenderObject() as RenderBox;
+        final containerPosition = containerBox.localToGlobal(Offset.zero);
 
+        // 現在の文字列を取得
         final content = List<String>.from(widget.omikuji['content']);
-        final lineText = content[_currentLine].substring(0, _currentChar);
+        final currentLineText = content[_currentLine];
+        final lineTextUpToCurrent = currentLineText.substring(0, _currentChar);
 
-        // 現在の文字の位置を計算
+        // 行の高さを計算
+        final lineHeight = (_textStyle.fontSize ?? 20) * (_textStyle.height ?? 1.0);
+
+        // パディング計算
+        final verticalPadding = ((widget.contentHeight -
+            ((content.length * (_textStyle.fontSize ?? 20)) +
+                ((content.length - 1) * (_textStyle.fontSize ?? 20) * (_textStyle.height ?? 1.0)))) /
+            2).clamp(0.0, double.infinity);
+
+        // テキストの位置計算
         final textPainter = TextPainter(
           text: TextSpan(
-            text: lineText,
+            text: lineTextUpToCurrent,
             style: _textStyle,
           ),
           textDirection: TextDirection.ltr,
         );
         textPainter.layout();
 
-        // 縦方向のパディングを計算
-        final double verticalPadding = ((widget.contentHeight -
-            ((content.length * (_textStyle.fontSize ?? 20)) +
-                ((content.length - 1) * (_textStyle.fontSize ?? 20) * (_textStyle.height ?? 1.0)))) /
-            2).clamp(0.0, double.infinity);
-
+        // 文字の中心位置を計算
         final charPosition = Offset(
-          position.dx + textPainter.width,
-          position.dy + verticalPadding + (_currentLine * (_textStyle.fontSize ?? 20) * (_textStyle.height ?? 1.0)),  // 縦位置：パディング + 行数 * 行の高さ
+          containerPosition.dx + textPainter.width,  // X座標：コンテナの左端 + これまでの文字幅
+          containerPosition.dy + verticalPadding +
+              (_currentLine * lineHeight) +  // 行数 × 行の高さ
+              (_textStyle.fontSize ?? 20) / 2,  // 文字の縦方向中心に合わせる
         );
-        callback(charPosition);  // nullチェック済みの変数を使用
-      }
 
+        callback(charPosition);
+      }
     });
   }
+
 
   @override
   Widget build(BuildContext context) {

@@ -12,7 +12,8 @@ class LaserBeamPainter extends CustomPainter {
     required this.startPoint,
     required this.endPoint,
     required this.progress,
-    this.beamColor = const Color(0xFF64FFDA),
+    //this.beamColor = const Color(0xFF64FFDA),
+    this.beamColor = Colors.white,
   });
 
   @override
@@ -34,14 +35,14 @@ class LaserBeamPainter extends CustomPainter {
     final gradient = LinearGradient(
       colors: [
         beamColor.withOpacity(0.8),
-        beamColor.withOpacity(0.1),
+        beamColor.withOpacity(0.4),
       ],
     );
 
     // メインビーム描画
     final paint = Paint()
       ..shader = gradient.createShader(Rect.fromPoints(startPoint, currentEnd))
-      ..strokeWidth = 2.0
+      ..strokeWidth = 5.0 //ビームの太さ
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke;
 
@@ -75,7 +76,7 @@ class LaserBeamPainter extends CustomPainter {
         ..color = beamColor.withOpacity((progress - 0.9) * 5)
         ..style = PaintingStyle.fill;
 
-      canvas.drawCircle(currentEnd, 4.0, glowPaint);
+      canvas.drawCircle(currentEnd, 12.0, glowPaint);
     }
   }
 
