@@ -17,11 +17,10 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
   late AnimationController _rotationController; // 回転用
   late AnimationController _pulseController; // 脈動用
   late AnimationController _moveController; // 追加：移動用
+  late AnimationController _buttonAnimController; //ボタン吸い込み用
   late Animation<double> _scaleAnimation; // 0→300のスケール
   late Animation<double> _pulseAnimation; // 1.0→0.8の脈動
   late Animation<Offset> _positionAnimation; // 追加：位置用
-  //late AnimationController _scaleController;
-  //late AnimationController _rotationController;
   bool _showOmikujiButton = false; // おみくじボタン表示制御
   bool _isMoving = false; // 追加：移動中フラグ
   bool _isTyping = false;
@@ -31,6 +30,9 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
   final GlobalKey _kouroKey = GlobalKey(); // 光彩のキーを追加
   final List<LaserBeamWidget> _activeBeams = [];
   int? _currentCreatorId;  // 追加：creatorIDを保持するフィールド
+  bool _isButtonAnimating = false;
+  Offset _buttonStartPosition = Offset.zero;
+  final GlobalKey _buttonKey = GlobalKey();
 
   @override
   void initState() {
@@ -48,6 +50,12 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
       parent: _scaleController,
       curve: Curves.easeOut,
     ));
+
+    // ボタンアニメーション用コントローラー
+    _buttonAnimController = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
 
     // 移動アニメーション (0.5秒)を追加
     _moveController = AnimationController(
@@ -108,6 +116,7 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
   @override
   void dispose() {
     _scaleController.dispose();
+    _buttonAnimController.dispose();
     _rotationController.dispose();
     _pulseController.dispose();
     _moveController.dispose(); // 追加
@@ -115,6 +124,27 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
   }
 
   void _onOmikujiTap() async {
+    // ボタンの位置を取得
+    final RenderBox? buttonBox = _buttonKey.currentContext?.findRenderObject() as RenderBox?;
+    final RenderBox? kouroBox = _kouroKey.currentContext?.findRenderObject() as RenderBox?;
+
+    if (buttonBox == null || kouroBox == null) return;
+
+    _buttonStartPosition = buttonBox.localToGlobal(
+        Offset(buttonBox.size.width / 2, buttonBox.size.height / 2)
+    );
+
+    setState(() {
+      _isButtonAnimating = true;
+    });
+
+    // ボタンアニメーション
+    await _buttonAnimController.forward();
+    _buttonAnimController.reset();
+    setState(() {
+      _isButtonAnimating = false;
+    });
+
     setState(() {
       _isMoving = true;
     });
@@ -326,13 +356,22 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
           // レーザービーム効果のレイヤー
           ..._activeBeams,
 
+          Transform.translate(
+            offset: Offset(0, h1 - hBottom - 10),
+            child: SizedBox(
+              child: Container(
+                color: Colors.tealAccent,
+              ),
+            ),
+          ),
+
           // 下部のボタン配置
           Transform.translate(
             offset: Offset(0, h1 - hBottom),
             child: SizedBox(
               height: hBottom,
               child: Container(
-                color: Colors.black,
+                color: Colors.black.withAlpha(120),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -348,7 +387,7 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
                                 ),
                                 onPressed: _onOmikujiTap,
                                 child: const Text(
-                                  'おみくじを引く',
+                                  '　おみくじを引く　',
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
@@ -385,6 +424,45 @@ class _OmikujiPrayerScreenState extends State<OmikujiPrayerScreen>
               ),
             ),
           ),
+
+
+          /*// アニメーション中のボタン
+          if (_isButtonAnimating)
+            AnimatedBuilder(
+              animation: _buttonAnimController,
+              builder: (context, child) {
+                final targetPosition = _getKouroCenterPosition();
+                final dx = _buttonStartPosition.dx +
+                    (targetPosition.dx - _buttonStartPosition.dx) *
+                        _buttonAnimController.value;
+                final dy = _buttonStartPosition.dy +
+                    (targetPosition.dy - _buttonStartPosition.dy) *
+                        _buttonAnimController.value;
+                final scale = 1.0 - _buttonAnimController.value;
+
+                return Positioned(
+                  left: dx - (50 * scale),  // ボタンの幅の半分
+                  top: dy - (20 * scale),   // ボタンの高さの半分
+                  child: Transform.scale(
+                    scale: scale,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                      ),
+                      onPressed: null,
+                      child: const Text(
+                        'おみくじ',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),*/
         ],
       ),
     );
